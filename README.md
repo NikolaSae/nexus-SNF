@@ -1,42 +1,43 @@
 # NexusBot
 
-**Multi-agent sistem za pretragu interne dokumentacije, izgrađen u Microsoft Copilot Studiju.**
+**A multi-agent system for searching internal documentation, built in Microsoft Copilot Studio.**
 
-NexusBot zaposlenima omogućava da na srpskom postave pitanje o internoj dokumentaciji (ugovori, procedure, arhitektura, benchmark analize) i dobiju **doslovno izvučen sadržaj** iz SharePoint dokumenata: prave datume, iznose, strane ugovora i korake procedura, uvek sa nazivom fajla, linkom i datumom izmene. Sistem ne odgovara iz opšteg znanja modela.
+NexusBot lets employees ask questions about internal documentation (contracts, procedures, architecture, benchmark analyses) in Serbian and get back **verbatim extracted content** from SharePoint documents: real dates, amounts, contract parties and procedure steps, always with the file name, link and last-modified date. The system never answers from the model's general knowledge.
 
 > [!NOTE]
-> Ovo je javna, redigovana verzija dokumentacije. Naziv kompanije, SharePoint adrese, nazivi odeljenja i grupa pristupa, partneri, kodni nazivi projekata i konkretni primeri zamenjeni su generičkim vrednostima (npr. `Contoso`, `contoso.sharepoint.com`, `FIN`, `Grad X`). Arhitektura i logika sistema su neizmenjene.
+> This is a public, redacted version of the documentation. The company name, SharePoint addresses, department and access-group names, partners, project codenames and concrete examples have been replaced with generic values (e.g. `Contoso`, `contoso.sharepoint.com`, `FIN`, `Grad X`). The architecture and logic of the system are unchanged. The detailed pages (`.mdx`) are written in Serbian.
 
-## Sadržaj
+## Contents
 
-- [Kako radi](#kako-radi)
-- [Arhitektura](#arhitektura)
-- [Orkestrator](#orkestrator)
-- [Rutiranje i kontrola pristupa](#rutiranje-i-kontrola-pristupa)
-- [Povezani agenti](#povezani-agenti)
-- [Skillovi](#skillovi)
-- [Izvori znanja](#izvori-znanja)
-- [Validacija i retry petlja](#validacija-i-retry-petlja)
-- [Limiti](#limiti)
-- [Bezbednosni principi](#bezbednosni-principi)
-- [Rešavanje problema](#rešavanje-problema)
-- [Struktura repozitorijuma](#struktura-repozitorijuma)
-- [Lokalni pregled dokumentacije](#lokalni-pregled-dokumentacije)
+- [How it works](#how-it-works)
+- [Architecture](#architecture)
+- [Orchestrator](#orchestrator)
+- [Routing and access control](#routing-and-access-control)
+- [Connected agents](#connected-agents)
+- [Skills](#skills)
+- [Knowledge sources](#knowledge-sources)
+- [Validation and retry loop](#validation-and-retry-loop)
+- [Limits](#limits)
+- [Security principles](#security-principles)
+- [Troubleshooting](#troubleshooting)
+- [Repository structure](#repository-structure)
+- [Previewing the docs locally](#previewing-the-docs-locally)
+- [Versions](#versions)
 
-## Kako radi
+## How it works
 
-Svaki zahtev prolazi kroz šest koraka:
+Every request goes through six steps:
 
-1. **Klasifikacija** – zahtev se svrstava u jedan od intenata. Ako je nejasan, sistem postavlja tačno jedno pitanje za pojašnjenje.
-2. **Rezolucija pristupa** – odeljenje iz Entra ID profila korisnika mapira se na biblioteku (`UserLibrary`). Bez poklapanja: „Nemate pristup. Kontaktirajte IT podršku.” i pretraga se ne pokreće.
-3. **Rutiranje** – biblioteka određuje nadležnog domenskog agenta.
-4. **Pretraga i ekstrakcija** – agent svojim skillom pretražuje isključivo svoje SharePoint izvore i doslovno izvlači sadržaj.
-5. **Validacija** – orkestrator ocenjuje rezultat (PASS / PARTIAL / FAIL); neuspeh pokreće ponovnu pretragu, najviše 3 puta.
-6. **Prikaz** – za svaki dokument: naziv fajla u backtick-ovima, link, datum izmene, pa izvučen sadržaj. Uvek na srpskom (ekavica).
+1. **Classification** – the request is mapped to one of the intents. If it is ambiguous, the system asks exactly one clarifying question.
+2. **Access resolution** – the department from the user's Entra ID profile is mapped to a library (`UserLibrary`). With no match, the user gets *„Nemate pristup. Kontaktirajte IT podršku.”* (“You do not have access. Contact IT support.”) and no search is run.
+3. **Routing** – the library determines the responsible domain agent.
+4. **Search and extraction** – the agent uses its skill to search only its own SharePoint sources and extracts content verbatim.
+5. **Validation** – the orchestrator grades the result (PASS / PARTIAL / FAIL); a failure triggers another search, at most 3 times.
+6. **Display** – for each document: file name in backticks, link, last-modified date, then the extracted content. Always in Serbian (Ekavian).
 
-### Primer
+### Example
 
-> **Korisnik:** Nađi mi aktuelni aneks ugovora o parkingu — do kada važi?
+> **User:** Nađi mi aktuelni aneks ugovora o parkingu — do kada važi?
 >
 > **NexusBot:**
 > ⚙️ Klasifikujem zahtev...
@@ -46,268 +47,268 @@ Svaki zahtev prolazi kroz šest koraka:
 >
 > Iz dokumenta, član 4: „Aneks stupa na snagu danom potpisivanja i primenjuje se zaključno sa 31.12.2026. godine.”
 
-*(Primer je ilustrativan; naziv fajla, datum i sadržaj su izmišljeni.)*
+*(The user asks for the current annex of the parking contract and its expiry date; the bot returns the file and quotes article 4 verbatim. The example is illustrative: file name, date and content are made up.)*
 
-U pozadini: intent = `contract_current` → odeljenje iz Entra ID-a → `UserLibrary = FIN` → `AGENT_FIN` → skill `content-obrada-fin` izvlači traženi član → `validate-search-result` vraća PASS → prikaz u fiksnom formatu.
+Behind the scenes: intent = `contract_current` → department from Entra ID → `UserLibrary = FIN` → `AGENT_FIN` → the `content-obrada-fin` skill extracts the requested article → `validate-search-result` returns PASS → output in the fixed format.
 
-## Arhitektura
+## Architecture
 
-| Sloj | Komponenta | Odgovornost |
+| Layer | Component | Responsibility |
 |---|---|---|
-| Orkestracija | NexusBot orkestrator (system prompt `NexusSNF v2.1`) | Klasifikacija, rutiranje po odeljenju, validacija, retry, prikaz |
-| Delegacija | 4 povezana (connected) agenta + 1 planiran | Domenski specijalisti za pretragu i ekstrakciju |
-| Alati | 6 skillova | Konstrukcija upita, ekstrakcija sadržaja, validacija rezultata |
-| Znanje | 4 SharePoint biblioteke + 1 planirana | Izvor stvarnog sadržaja dokumenata |
+| Orchestration | NexusBot orchestrator (system prompt `NexusSNF v2.1`) | Classification, department-based routing, validation, retry, display |
+| Delegation | 4 connected agents + 1 planned | Domain specialists for search and extraction |
+| Tools | 6 skills | Query construction, content extraction, result validation |
+| Knowledge | 4 SharePoint libraries + 1 planned | Source of the actual document content |
 
 ```mermaid
 flowchart TD
-    U([Korisnik]) --> O[NexusBot orkestrator<br/>NexusSNF v2.1]
-    O --> C{STEP 1<br/>Klasifikacija}
-    C -->|info zahtev| O
-    C -->|dokument zahtev| S{STEP 2<br/>Scope + rutiranje}
+    U([User]) --> O[NexusBot orchestrator<br/>NexusSNF v2.1]
+    O --> C{STEP 1<br/>Classification}
+    C -->|info request| O
+    C -->|document request| S{STEP 2<br/>Scope + routing}
     S -->|FIN| A1[AGENT_FIN]
     S -->|DIGITAL| A2[AGENT_DIGITAL]
     S -->|PORTAL| A3[AGENT_PORTAL]
     S -->|KANALI| A4[Digitalni Kanali<br/>Document Assistant]
-    S -.FINTECH planirano.-> A5[AGENT_FINTECH]
+    S -.FINTECH planned.-> A5[AGENT_FINTECH]
     A1 --> SK1[content-obrada-fin]
     A2 --> SK2[search-digital-documents]
     A3 --> SK3[search-cx-portal-documents]
     A4 --> SK4[sharepoint-intelligent-search]
-    SK1 & SK2 & SK3 & SK4 --> K[(SharePoint<br/>knowledge source-i)]
+    SK1 & SK2 & SK3 & SK4 --> K[(SharePoint<br/>knowledge sources)]
     A1 & A2 & A3 & A4 --> O
     O --> V[validate-search-result<br/>STEP 3]
     V -->|PASS / PARTIAL / FAIL| D{STEP 3.5<br/>Retry? max 3}
     D -->|retry| S
-    D -->|final| P[STEP 4<br/>Prikaz]
+    D -->|final| P[STEP 4<br/>Display]
     P --> U
 ```
 
-Orkestrator **nikad sam ne pretražuje** SharePoint; on odlučuje kome da prosledi zahtev i da li je rezultat dovoljno dobar. Agenti nikad ne komuniciraju direktno sa korisnikom.
+The orchestrator **never searches SharePoint itself**; it decides who handles the request and whether the result is good enough. Agents never talk to the user directly.
 
-### Tok zahteva
+### Request flow
 
 ```mermaid
 sequenceDiagram
-    actor U as Korisnik
-    participant O as Orkestrator
-    participant A as Povezani agent
-    participant S as Skill (pretraga)
+    actor U as User
+    participant O as Orchestrator
+    participant A as Connected agent
+    participant S as Skill (search)
     participant K as SharePoint knowledge
     participant V as validate-search-result
 
-    U->>O: Zahtev (srpski)
-    O->>O: Klasifikacija intenta + ENTITY
+    U->>O: Request (Serbian)
+    O->>O: Classify intent + ENTITY
     O->>A: original_query, entity, intent, goal
-    A->>S: pokreni skill
-    S->>K: optimizovan upit (+ fallback lanac)
-    K-->>S: delovi sadržaja
-    S-->>A: izvučene činjenice + nazivi + datumi + linkovi
-    A-->>O: rezultat
-    O->>V: original_query, entity, intent, fajlovi
+    A->>S: run skill
+    S->>K: optimized query (+ fallback chain)
+    K-->>S: content chunks
+    S-->>A: extracted facts + names + dates + links
+    A-->>O: result
+    O->>V: original_query, entity, intent, files
     V-->>O: PASS / PARTIAL / FAIL
-    alt PARTIAL ili FAIL i iteracija < 3
-        O->>A: prošireni / preformulisani upit
-    else PASS ili iteracija = 3
-        O-->>U: fajlovi + linkovi + izvučen sadržaj
+    alt PARTIAL or FAIL and iteration < 3
+        O->>A: broadened / rephrased query
+    else PASS or iteration = 3
+        O-->>U: files + links + extracted content
     end
 ```
 
-### Unutar agenta
+### Inside an agent
 
-Svaki domenski agent prolazi isti pipeline: **izvođenje parametara** (entity, intent, goal; složeni zahtevi se dele na podzahteve) → **rezolucija projekta i tipa dokumenta** → **konstrukcija upita** (nikad sirov `original_query`) → **izvršavanje uz fallback lanac** (najviše 15 poziva ka izvoru) → **klasifikacija, doslovna ekstrakcija i rangiranje** → vraćanje strukturisanog rezultata orkestratoru (`title`, `link`, `modified`, `type`, `relevance_reason`, `flags`, `content`).
+Every domain agent runs the same pipeline: **derive parameters** (entity, intent, goal; complex requests are split into sub-requests) → **resolve project and document type** → **construct the query** (never the raw `original_query`) → **execute with a fallback chain** (at most 15 knowledge source calls) → **classify, extract verbatim and rank** → return a structured result to the orchestrator (`title`, `link`, `modified`, `type`, `relevance_reason`, `flags`, `content`).
 
-## Orkestrator
+## Orchestrator
 
-Definisan system prompt-om **NexusSNF — Orchestrator System Prompt v2.1**. Odgovara isključivo na srpskom (ekavica) i nikad ne otkriva interne mehanizme (nazive alata, skillova, agenata, biblioteka, broj iteracija).
+Defined by the system prompt **NexusSNF — Orchestrator System Prompt v2.1**. It replies only in Serbian (Ekavian) and never exposes internal mechanics (tool, skill, agent or library names, iteration counts).
 
-| Korak | Šta radi |
+| Step | What it does |
 |---|---|
-| STEP 1 – Klasifikacija | Razdvaja info zahteve (odgovara direktno) od dokument zahteva; izvlači intent i ENTITY |
-| STEP 2 – Scope i rutiranje | Rezolucija `UserLibrary`, provera opsega, delegacija agentu |
-| STEP 3 – Validacija | Poziva `validate-search-result` |
-| STEP 3.5 – Retry | Odlučuje o ponavljanju (max 3 iteracije) |
-| STEP 4 – Prikaz | Fiksni format: naziv fajla, link, datum, sadržaj |
+| STEP 1 – Classification | Separates info requests (answered directly) from document requests; extracts intent and ENTITY |
+| STEP 2 – Scope and routing | Resolves `UserLibrary`, checks scope, delegates to an agent |
+| STEP 3 – Validation | Calls `validate-search-result` |
+| STEP 3.5 – Retry | Decides whether to retry (max 3 iterations) |
+| STEP 4 – Display | Fixed format: file name, link, date, content |
 
-### Intenti
+### Intents
 
-| Intent | Cilj |
+| Intent | Goal |
 |---|---|
-| `contract_current` | najnovija verzija, pročitan sadržaj |
-| `contract_history` | sve verzije, opadajuće, pročitan sadržaj |
-| `contract_compare` | dve najnovije verzije, obe pročitane |
-| `document_find` | odgovarajući fajl, pročitan sadržaj |
-| `folder_list` | kompletna lista, sadržaj nije potreban |
-| `document_summary` | svi fajlovi, sav sadržaj |
+| `contract_current` | latest version, content read |
+| `contract_history` | all versions, newest first, content read |
+| `contract_compare` | two latest versions, both read |
+| `document_find` | matching file, content read |
+| `folder_list` | complete list, content not needed |
+| `document_summary` | all files, all content |
 
-### Pravila prikaza
+### Display rules
 
-- Naziv fajla tačno kako je vraćen, u backtick-ovima, nikad izmenjen; zatim link i datum izmene.
-- Sadržaj se prikazuje direktno, nikad kao apstraktan opis („Sadržaj:”, „Dokument sadrži”, „Obuhvata:” su zabranjeni).
-- Nečitljiv dokument: „Dokument nije čitljiv automatski. Otvorite: [link]”.
-- Tokom rada prikazuju se fiksne progres poruke (`⚙️ Klasifikujem zahtev...`, `🔄 Pretražujem dokumentaciju...`, `🔍 Validiram rezultat...`).
+- File name exactly as returned, in backticks, never altered; then link and last-modified date.
+- Content is shown directly, never as an abstract description. The phrases *„Sadržaj:”*, *„Dokument sadrži”* and *„Obuhvata:”* (“Contents:”, “The document contains”, “Covers:”) are forbidden.
+- Unreadable document: *„Dokument nije čitljiv automatski. Otvorite: [link]”* (“The document cannot be read automatically. Open: [link]”).
+- Fixed progress messages are shown while working: `⚙️ Klasifikujem zahtev...`, `🔄 Pretražujem dokumentaciju...`, `🔍 Validiram rezultat...` (classifying, searching, validating).
 
-## Rutiranje i kontrola pristupa
+## Routing and access control
 
-Pristup i izbor biblioteke izvode se **isključivo iz atributa odeljenja (department) u Entra ID profilu**. Poklapanje je striktno egzaktno, bez fuzzy ili delimičnog uparivanja; bez poklapanja → `NEMA_PRISTUPA`.
+Access and library selection are derived **solely from the department attribute in the user's Entra ID profile**. Matching is strictly exact, with no fuzzy or partial matching; no match → `NEMA_PRISTUPA` (no access).
 
-| Odeljenje (Entra ID) | UserLibrary | Agent | Domen |
+| Department (Entra ID) | UserLibrary | Agent | Domain |
 |---|---|---|---|
-| Odeljenje za finansijske servise | `FIN` | AGENT_FIN | ugovori, parking, humanitarni, VAS, BULK, PRM |
-| Odeljenje za digitalne servise | `DIGITAL` | AGENT_DIGITAL | digitalni servisi (Identity Protect, Safe Net...) |
-| Odeljenje za fintech | `FINTECH` | AGENT_FINTECH *(planiran)* | fintech dokumentacija |
-| Odeljenje za korisnički portal | `PORTAL` | AGENT_PORTAL | benchmark, matrice, SSO, funkcionalni zahtevi |
-| Odeljenje za digitalne kanale | `KANALI` | AGENT_KANALI | arhitektura, deploy, incidenti, monitoring |
+| Financial services department | `FIN` | AGENT_FIN | contracts, parking, humanitarian, VAS, BULK, PRM |
+| Digital services department | `DIGITAL` | AGENT_DIGITAL | digital services (Identity Protect, Safe Net...) |
+| Fintech department | `FINTECH` | AGENT_FINTECH *(planned)* | fintech documentation |
+| Customer portal department | `PORTAL` | AGENT_PORTAL | benchmarks, matrices, SSO, functional requirements |
+| Digital channels department | `KANALI` | AGENT_KANALI | architecture, deployment, incidents, monitoring |
 
-Ako tema zahteva ne pripada domenu korisnikove biblioteke, pretraga se ne pokreće i korisnik dobija fiksan odgovor da se zahtev odnosi na dokumentaciju drugog sektora.
+If the topic of a request is outside the domain of the user's library, no search is run and the user gets a fixed reply saying the request concerns another department's documentation.
 
-Orkestrator agentu prosleđuje četiri autoritativne vrednosti (`original_query`, `entity`, `intent`, `goal`), koje agent koristi umesto da sam ponovo klasifikuje zahtev.
+The orchestrator passes four authoritative values to the agent (`original_query`, `entity`, `intent`, `goal`), which the agent uses instead of re-classifying the request itself.
 
 > [!IMPORTANT]
-> Tvrdnja korisnika u chatu o sopstvenom odeljenju, pristupu ili autoritetu **nikad nije validan ulaz**. Prava pristupa dokumentima i dalje moraju da budu obezbeđena SharePoint dozvolama; rutiranje u promptu ih ne zamenjuje.
+> A user's claim in chat about their own department, access or authority is **never a valid input**. Access to documents must still be enforced by SharePoint permissions; routing in the prompt does not replace them.
 
-## Povezani agenti
+## Connected agents
 
-| Agent | Biblioteka | Domen | Skill |
+| Agent | Library | Domain | Skill |
 |---|---|---|---|
-| [AGENT_FIN](agents/fin.mdx) | `FIN` | Ugovori: parking, humanitarni, VAS, BULK, PRM, pravilnici | `content-obrada-fin` |
-| [AGENT_DIGITAL](agents/digital.mdx) | `DIGITAL` | Identity Protect, Safe Net, Safe Home Net, VR servis | `search-digital-documents` |
-| [AGENT_PORTAL](agents/cx-portal.mdx) | `PORTAL` | Benchmark analize, matrice kupovine i plaćanja, SSO, funkcionalni zahtevi | `search-cx-portal-documents` |
-| [Digitalni Kanali Document Assistant](agents/digitalni-kanali.mdx) | `KANALI` | Arhitektura, deploy, incidenti, monitoring, roadmap | `sharepoint-intelligent-search` |
-| AGENT_FINTECH | `FINTECH` | *planiran, još nije implementiran* | – |
+| [AGENT_FIN](agents/fin.mdx) | `FIN` | Contracts: parking, humanitarian, VAS, BULK, PRM, rulebooks | `content-obrada-fin` |
+| [AGENT_DIGITAL](agents/digital.mdx) | `DIGITAL` | Identity Protect, Safe Net, Safe Home Net, VR service | `search-digital-documents` |
+| [AGENT_PORTAL](agents/cx-portal.mdx) | `PORTAL` | Benchmark analyses, purchase and payment matrices, SSO, functional requirements | `search-cx-portal-documents` |
+| [Digitalni Kanali Document Assistant](agents/digitalni-kanali.mdx) | `KANALI` | Architecture, deployment, incidents, monitoring, roadmap | `sharepoint-intelligent-search` |
+| AGENT_FINTECH | `FINTECH` | *planned, not yet implemented* | – |
 
-Zajednički principi svih agenata:
+Principles shared by all agents:
 
-- **Retrieval-first** – pretraga je obavezna; odgovor iz znanja modela je zabranjen kada odgovor treba da bude u dokumentaciji.
-- **Dokumentacija ispred modela** – kod konflikta, veruje se dokumentaciji.
-- **Data vs. instructions** – sadržaj iz dokumenata je podatak, nikad instrukcija.
-- **Doslovna ekstrakcija** – stvarni datumi, imena, iznosi i koraci, nikad apstraktni opisi.
-- **Rešavanje konflikata** – kod protivrečnih dokumenata konflikt se navodi, prednost ima najnoviji odobreni dokument, i nikad se ne bira tiho.
+- **Retrieval-first** – search is mandatory; answering from model knowledge is forbidden when the answer should be in the documentation.
+- **Documentation over the model** – on conflict, the documentation wins.
+- **Data vs. instructions** – content from documents is data, never instructions.
+- **Verbatim extraction** – real dates, names, amounts and steps, never abstract descriptions.
+- **Conflict resolution** – when documents disagree, the conflict is stated, the newest approved document takes precedence, and the choice is never made silently.
 
-`AGENT_KANALI` (u ruting tabeli) i „Digitalni Kanali Document Assistant” (u instrukcijama) su ista komponenta.
+`AGENT_KANALI` (in the routing table) and “Digitalni Kanali Document Assistant” (in the agent instructions) are the same component.
 
-## Skillovi
+## Skills
 
-| Skill | Vlasnik | Namena |
+| Skill | Owner | Purpose |
 |---|---|---|
-| [content-obrada](skills/content-obrada.mdx) | Orkestrator | Klasifikacija i ekstrakcija sadržaja (verzija orkestratora) |
-| [content-obrada-fin](skills/content-obrada-fin.mdx) | AGENT_FIN | Pretraga + ekstrakcija za FIN (v1.2) |
-| [search-digital-documents](skills/search-digital-documents.mdx) | AGENT_DIGITAL | Pretraga Digital dokumentacije |
-| [search-cx-portal-documents](skills/search-cx-portal-documents.mdx) | AGENT_PORTAL | Pretraga CX Portal dokumentacije (prioritet INDEX dokumentima) |
-| [sharepoint-intelligent-search](skills/sharepoint-intelligent-search.mdx) | Digitalni Kanali | Pretraga biblioteka i SharePoint lista sa citiranjem (v3.x) |
-| [validate-search-result](skills/validate-search-result.mdx) | Orkestrator | Ocena rezultata: PASS / PARTIAL / FAIL |
+| [content-obrada](skills/content-obrada.mdx) | Orchestrator | Content classification and extraction (orchestrator version) |
+| [content-obrada-fin](skills/content-obrada-fin.mdx) | AGENT_FIN | Search + extraction for FIN (v1.2) |
+| [search-digital-documents](skills/search-digital-documents.mdx) | AGENT_DIGITAL | Search of Digital documentation |
+| [search-cx-portal-documents](skills/search-cx-portal-documents.mdx) | AGENT_PORTAL | Search of CX Portal documentation (INDEX documents first) |
+| [sharepoint-intelligent-search](skills/sharepoint-intelligent-search.mdx) | Digitalni Kanali | Search of libraries and SharePoint lists with citations (v3.x) |
+| [validate-search-result](skills/validate-search-result.mdx) | Orchestrator | Result grading: PASS / PARTIAL / FAIL |
 
-`content-obrada` i `content-obrada-fin` su dve zasebne verzije istog koncepta, svaka u vlasništvu svoje komponente.
+`content-obrada` and `content-obrada-fin` are two separate versions of the same concept, each owned by its own component.
 
-### Konstrukcija upita
+### Query construction
 
-Skillovi nikad ne šalju sirovo pitanje korisnika. Upit se gradi iz entiteta i signal termina za kategoriju, a kada ne uspe, prolazi se **fallback lanac** od najužeg ka najširem:
+Skills never send the user's raw question. The query is built from the entity and the category's signal terms, and when it fails, a **fallback chain** runs from narrowest to broadest:
 
 ```
-Primarni upit (entitet + signal termini)
-→ samo entitet:              "Grad X Partner Y parking ugovor"
-→ kategorija + entitet:      "parking ugovor Grad X"
-→ samo signal kategorije:    "parking ugovor aneks"
+Primary query (entity + signal terms)
+→ entity only:               "Grad X Partner Y parking ugovor"
+→ category + entity:         "parking ugovor Grad X"
+→ category signal only:      "parking ugovor aneks"
 ```
 
-Dvosmisleni termini (npr. „mCommerce”, koji može biti i Parking i VAS) pretražuju obe kategorije uz napomenu, umesto pogađanja.
+Ambiguous terms (e.g. “mCommerce”, which can mean either Parking or VAS) search both categories with a note, instead of guessing.
 
-## Izvori znanja
+## Knowledge sources
 
-Svi agenti čitaju sadržaj iz SharePoint biblioteka na jednom sajtu. Svaki agent čita **isključivo svoje** izvore. Knowledge source je jedini mehanizam dohvatanja; nema „Get files” ni listing alata.
+All agents read content from SharePoint libraries on a single site. Each agent reads **only its own** sources. The knowledge source is the only retrieval mechanism; there is no “Get files” or listing tool.
 
-| Biblioteka | Sadržaj |
+| Library | Content |
 |---|---|
-| `FIN` | Ugovori, aneksi, parking ugovori, ugovori sa humanitarnim organizacijama, VAS/BULK/PRM, pravilnici, obrasci, procedure |
-| `DIGITAL` | Dokumentacija digitalnih projekata (Identity Protect, Safe Home Net, Safe Net, VR servis) |
-| `PORTAL` | Benchmark analize, matrice kupovine i plaćanja, SSO koncepti, funkcionalni zahtevi |
-| `KANALI` | Arhitektura, deploy procedure, incident menadžment, monitoring, roadmap |
-| `FINTECH` | *planirana* |
+| `FIN` | Contracts, annexes, parking contracts, humanitarian organization contracts, VAS/BULK/PRM, rulebooks, forms, procedures |
+| `DIGITAL` | Documentation of digital projects (Identity Protect, Safe Home Net, Safe Net, VR service) |
+| `PORTAL` | Benchmark analyses, purchase and payment matrices, SSO concepts, functional requirements |
+| `KANALI` | Architecture, deployment procedures, incident management, monitoring, roadmap |
+| `FINTECH` | *planned* |
 
-Originalni `.pptx` i `.xlsx` fajlovi ne mogu se pouzdano čitati, pa CX Portal koristi konsolidovane **INDEX dokumente** (`_BENCHMARK_INDEX`, `_MATRICE_INDEX`, `_SSO_INDEX`) sa punim sadržajem tih fajlova.
+Original `.pptx` and `.xlsx` files cannot be read reliably, so CX Portal uses consolidated **INDEX documents** (`_BENCHMARK_INDEX`, `_MATRICE_INDEX`, `_SSO_INDEX`) containing the full content of those files.
 
-Microsoft Purview sensitivity labele se uvek prikazuju uz izvučene podatke, nikad se ne potiskuju.
+Microsoft Purview sensitivity labels are always shown with the extracted data and never suppressed.
 
-## Validacija i retry petlja
+## Validation and retry loop
 
-Posle svakog odgovora agenta, orkestrator poziva `validate-search-result`:
+After each agent response, the orchestrator calls `validate-search-result`:
 
-| Verdikt | Akcija |
+| Verdict | Action |
 |---|---|
-| PASS | prikaz rezultata |
-| PARTIAL ili FAIL, iteracija < 3 | proširi ili preformuliši upit i ponovi |
-| iteracija = 3 | prikaz najboljeg rezultata viđenog u svim pokušajima |
+| PASS | display the result |
+| PARTIAL or FAIL, iteration < 3 | broaden or rephrase the query and retry |
+| iteration = 3 | display the best result seen across all attempts |
 
-- Najbolji rezultat se bira po prioritetu PASS > PARTIAL > FAIL, a realan sadržaj ima prednost nad praznim/FALLBACK.
-- Greška ili prazan odgovor validatora tretira se kao PARTIAL, tako da se validacija nikad tiho ne preskače.
-- Potpuno prazan rezultat nikad se ne prikazuje kao konačan bez bar jednog ponovnog pokušaja.
+- The best result is chosen by PASS > PARTIAL > FAIL, and real content beats empty/FALLBACK results.
+- A validator error or empty response is treated as PARTIAL, so validation is never silently skipped.
+- A fully empty result is never shown as final without at least one retry.
 
-## Limiti
+## Limits
 
-| Limit | Vrednost |
+| Limit | Value |
 |---|---|
-| Pozivi ka knowledge source-u | 15 po zahtevu |
-| Retry iteracije | 3 |
-| Vraćeni dokumenti | do 5 (prioritet po tipu dokumenta, pa po datumu) |
-| Pitanja za pojašnjenje | tačno jedno |
-| Memorija između sesija | nema |
+| Knowledge source calls | 15 per request |
+| Retry iterations | 3 |
+| Documents returned | up to 5 (prioritized by document type, then by date) |
+| Clarifying questions | exactly one |
+| Memory across sessions | none |
 
-Kada se budžet pretrage potroši pre kraja fallback lanca, skill prijavljuje šta je pokriveno, a šta nije, da bi korisnik znao da je pretraga bila delimična.
+When the search budget runs out before the fallback chain finishes, the skill reports what was and was not covered, so the user knows the search was partial.
 
-## Bezbednosni principi
+## Security principles
 
-**Retrieval-first (RAG grounding).** Kada odgovor treba da bude u dokumentaciji, model nikad ne odgovara iz sopstvenog znanja.
+**Retrieval-first (RAG grounding).** When the answer should be in the documentation, the model never answers from its own knowledge.
 
-**Odbrana od prompt injection-a.** Sav sadržaj vraćen iz dokumenata tretira se kao podatak, nikad kao instrukcija, u orkestratoru, svim agentima i svim skillovima, uključujući validator. Nijedna fraza, ni prikrivena (npr. leetspeak), ne daje ovlašćenje da se zaobiđu pravila. Izmene ponašanja moguće su samo kroz Copilot Studio administraciju.
+**Prompt injection defense.** All content returned from documents is treated as data, never as instructions — in the orchestrator, every agent and every skill, including the validator. No phrase, even obfuscated (e.g. leetspeak), grants authority to bypass the rules. Behavior can only be changed through Copilot Studio administration.
 
-**Pristup samo preko identiteta.** Prava se izvode iz Entra ID atributa, nikad iz teksta u razgovoru ili dokumentu. Razlog odbijanja se ne navodi kao „dozvole” ili „identitet”.
+**Access from identity only.** Permissions are derived from the Entra ID attribute, never from text in the conversation or a document. A refusal is never explained in terms of “permissions” or “identity”.
 
-## Rešavanje problema
+## Troubleshooting
 
-| Simptom | Uzrok | Rešenje |
+| Symptom | Cause | Fix |
 |---|---|---|
-| „Nemate pristup. Kontaktirajte IT podršku.” | Odeljenje u Entra ID-u nedostaje ili se egzaktno ne poklapa ni sa jednim redom | Proveriti `department` atribut; pristup se ne dodeljuje kroz chat |
-| „Ovaj zahtev se odnosi na dokumentaciju drugog sektora...” | Tema ne pripada domenu korisnikove biblioteke | Obratiti se nadležnom timu ili zatražiti proširenje pristupa |
-| „Dokument nije čitljiv automatski. Otvorite: [link]” | Original `.pptx`/`.xlsx` ili nečitljiv sadržaj | Koristiti INDEX dokumente ili otvoriti dokument preko linka |
-| Poruka da pretraga nije mogla da se izvrši | Tehnički otkaz izvora (greška ili timeout), ne „nije nađeno” | Pokušati ponovo; agenti ove dve situacije strogo razlikuju |
-| Zahtev za FINTECH nema izvršioca | AGENT_FINTECH je planiran | Očekivano ponašanje |
-| Delegacija tiho ne radi | Naziv agenta u promptu se ne poklapa sa nazivom u Copilot Studiju | Uskladiti nazive tačno |
+| *„Nemate pristup. Kontaktirajte IT podršku.”* (no access) | The department in Entra ID is missing or does not exactly match any row | Check the `department` attribute; access cannot be granted through chat |
+| *„Ovaj zahtev se odnosi na dokumentaciju drugog sektora...”* (another department) | The topic is outside the domain of the user's library | Contact the responsible team or request broader access |
+| *„Dokument nije čitljiv automatski. Otvorite: [link]”* (unreadable) | Original `.pptx`/`.xlsx` or unreadable content | Use the INDEX documents or open the document via the link |
+| Message that the search could not be performed | Technical failure of the source (error or timeout), not “not found” | Try again; agents strictly distinguish these two cases |
+| A FINTECH request has no handler | AGENT_FINTECH is planned | Expected behavior |
+| Delegation silently fails | The agent name in the prompt does not match the name in Copilot Studio | Make the names match exactly |
 
-## Struktura repozitorijuma
+## Repository structure
 
-Repozitorijum je [Mintlify](https://mintlify.com) projekat; ovaj README je sažetak cele dokumentacije za GitHub.
+This repository is a [Mintlify](https://mintlify.com) project; this README summarizes the full documentation for GitHub.
 
 ```
-├── README.md                 # ovaj pregled (za GitHub)
-├── docs.json                 # Mintlify konfiguracija i navigacija
+├── README.md                 # this overview (for GitHub)
+├── docs.json                 # Mintlify configuration and navigation
 ├── index.mdx, quickstart.mdx, summary.mdx
-├── architecture/             # pregled, orkestracija, tok podataka
-├── orchestrator/             # instrukcije, rutiranje, validacija, persona
-├── agents/                   # 4 domenska agenta
-├── skills/                   # 6 skillova
-├── knowledge/                # izvori znanja
-├── configuration/            # podešavanja i okruženje
-├── techniques/               # 8 tehnika (RAG, injection defense, ...)
-├── operations/               # limiti i rešavanje problema
-└── reference/                # rečnik, changelog
+├── architecture/             # overview, orchestration, data flow
+├── orchestrator/             # instructions, routing, validation, persona
+├── agents/                   # 4 domain agents
+├── skills/                   # 6 skills
+├── knowledge/                # knowledge sources
+├── configuration/            # settings and environment
+├── techniques/               # 8 techniques (RAG, injection defense, ...)
+├── operations/               # limits and troubleshooting
+└── reference/                # glossary, changelog
 ```
 
-Detaljne strane su u `.mdx` formatu i najbolje se čitaju kroz Mintlify sajt; na GitHubu se Mintlify komponente (kartice, koraci, napomene) prikazuju kao običan tekst.
+The detailed pages are `.mdx` files in Serbian and read best through the Mintlify site; on GitHub, Mintlify components (cards, steps, callouts) are shown as plain text.
 
-## Lokalni pregled dokumentacije
+## Previewing the docs locally
 
 ```bash
 npm i -g mint
 mint dev
 ```
 
-Sajt je zatim dostupan na `http://localhost:3000`.
+The site is then available at `http://localhost:3000`.
 
-## Verzije
+## Versions
 
-| Komponenta | Verzija |
+| Component | Version |
 |---|---|
-| Orkestrator (system prompt) | `NexusSNF v2.1` |
+| Orchestrator (system prompt) | `NexusSNF v2.1` |
 | `content-obrada-fin` | `v1.2` |
 | `sharepoint-intelligent-search` | `v3.x` |
-| Dokumentacija | `v1.0.0` (2026-07-14) |
+| Documentation | `v1.0.0` (2026-07-14) |
