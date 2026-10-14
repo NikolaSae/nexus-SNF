@@ -1,0 +1,53 @@
+---
+title: "Limiti"
+description: "Operativna ograničenja NexusBot sistema: budžet pretrage, iteracije, broj dokumenata i čitljivost formata."
+icon: "gauge-high"
+---
+
+## Numerički limiti
+
+| Limit | Vrednost | Izvor |
+|---|---|---|
+| Pozivi ka knowledge source-u | 15 po zahtevu | skillovi (Step 3) |
+| Iteracije retry-ja | 3 | orkestrator (STEP 3.5) |
+| Vraćeni dokumenti | do 5 | domenski skillovi |
+
+Detalji i citati: [Podešavanja i limiti](/configuration/settings).
+
+## Ograničenja čitljivosti formata
+
+Originalni `.pptx` i `.xlsx` fajlovi ne mogu se pouzdano čitati; CX Portal zato koristi INDEX dokumente:
+```
+Original .pptx and .xlsx files are not reliably readable. 
+If retrieval returns only fragments from an original file 
+(HTML tags, broken table fragments), 
+do not use that content — mark the document as not 
+automatically readable and return its title and link only.
+```
+Source: `search-cx-portal-documents-skill.md` (INDEX DOCUMENT RULES)
+
+Za takve dokumente propisana je tačna poruka korisniku:
+```
+If a file's content is FALLBACK -> "Dokument nije čitljiv automatski. 
+Otvorite: [link]"
+```
+Source: `nexusbot_orchestrator_system_ins.txt` (STEP 4)
+
+## Ponašanje kod dostignutog budžeta
+```
+If the cap is reached before the fallback chain completes, 
+stop and report which categories/queries were covered and which were not, 
+so the orchestrator can tell the user the search 
+was partial rather than exhaustive.
+```
+Source: `content-obrada-fin-skill.md` (Step 3)
+
+## Ograničenja opsega i memorije
+
+- **Bez memorije između sesija** — orkestrator nikad ne tvrdi da pamti prethodne razgovore. Source: `nexusbot_orchestrator_system_ins.txt` (GUARDRAILS).
+- **Jedno pitanje za pojašnjenje** — kod nejasnog zahteva postavlja se tačno jedno. Source: `nexusbot_orchestrator_system_ins.txt` (GUARDRAILS).
+- **Van opsega** — ako se tema ne poklapa sa domenom biblioteke, nema pretrage (fiksni odgovor). Vidi [Orkestracija i rutiranje](/architecture/orchestration).
+
+<Note>
+Za dijagnostiku grešaka (tehnički otkaz vs. „nije nađeno", NEMA_PRISTUPA, nesklad imena) vidi [Rešavanje problema](/operations/troubleshooting).
+</Note>

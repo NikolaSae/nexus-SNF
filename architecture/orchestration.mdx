@@ -1,0 +1,75 @@
+---
+title: "Orkestracija i rutiranje"
+description: "Kako NexusBot klasifikuje zahtev, bira biblioteku po odeljenju i delegira nadležnom agentu."
+icon: "diagram-project"
+---
+
+## Klasifikacija zahteva (STEP 1)
+
+Prvi korak razdvaja **info zahteve** (o samom sistemu — na njih orkestrator odgovara direktno, bez pozivanja agenta) od **dokument zahteva**, koji se svrstavaju u jedan od intenata:
+
+| Intent | Cilj |
+|---|---|
+| `contract_current` | najnovija verzija, pročitan sadržaj |
+| `contract_history` | sve verzije, opadajuće, pročitan sadržaj |
+| `contract_compare` | dve najnovije verzije, obe pročitane |
+| `document_find` | odgovarajući fajl, pročitan sadržaj |
+| `folder_list` | kompletna lista, sadržaj nije potreban |
+| `document_summary` | svi fajlovi, sav sadržaj |
+
+Source: `nexusbot_orchestrator_system_ins.txt` (STEP 1 — tabela intenata)
+
+Uz intent se izvlači **ENTITY** (klijent, organizacija, projekat, naziv dokumenta ili tema). Ako je nejasan, postavlja se tačno jedno pitanje.
+
+## Odeljenje → UserLibrary → agent
+
+Rutiranje ima dva mapiranja. Prvo, odeljenje iz Entra ID-a → biblioteka:
+
+| Department (Entra ID / email domen) | UserLibrary |
+|---|---|
+| Odeljenje za finansijske servise | `FIN` |
+| Odeljenje za digitalne servise | `DIGITAL` |
+| Odeljenje za fintech | `FINTECH` |
+| Odeljenje za korisnički portal | `PORTAL` |
+| Odeljenje za digitalne kanale | `KANALI` |
+
+Source: `nexusbot_orchestrator_system_ins.txt` (SESSION CONTEXT)
+
+Drugo, biblioteka → povezani agent i domen:
+
+| UserLibrary | Connected agent | Domen |
+|---|---|---|
+| `FIN` | AGENT_FIN | ugovori, parking, humanitarni, VAS, BULK, PRM |
+| `DIGITAL` | AGENT_DIGITAL | digitalni B2C projekti (Identity Protect, Safe Net…) |
+| `FINTECH` | AGENT_FINTECH | fintech dokumentacija |
+| `PORTAL` | AGENT_PORTAL | benchmark, matrice, SSO, funkcionalni zahtevi |
+| `KANALI` | AGENT_KANALI | arhitektura, serveri, deploy, monitoring… |
+
+Source: `nexusbot_orchestrator_system_ins.txt` (STEP 2 — Domain-to-agent mapping)
+
+<Note>
+`AGENT_KANALI` u ruting tabeli i „Digitalni Kanali Document Assistant“ u instrukcijama su **isti agent** (dva naziva za jednu komponentu). `AGENT_FINTECH` / `FINTECH` su **planirani** i još nisu implementirani. Detalji pristupa: [Rutiranje i kontrola pristupa](/orchestrator/routing-and-access).
+</Note>
+
+## Scope check
+
+Ako se tema zahteva ne poklapa sa domenom korisnikove biblioteke, orkestrator **ne pretražuje** i odgovara fiksno:
+
+> „Ovaj zahtev se odnosi na dokumentaciju drugog sektora. Obratite se nadležnom timu ili zatražite proširenje pristupa.“
+
+Source: `nexusbot_orchestrator_system_ins.txt` (STEP 2 — SCOPE CHECK AND ROUTING)
+
+## Delegacija
+
+Kada je zahtev u opsegu, orkestrator delegira agentu koji odgovara `UserLibrary`, prosleđujući mu četiri autoritativne vrednosti:
+
+```
+passing: original_query, entity, intent, goal.
+These values are authoritative for this request — the
+connected agent should use them rather than re-deriving its own
+classification from scratch
+```
+
+Source: `nexusbot_orchestrator_system_ins.txt` (STEP 2)
+
+Šta se dešava sa vraćenim fajlovima — validacija i retry — opisano je u [Životnom ciklusu zahteva](/architecture/data-flow) i na strani [Validacija i retry logika](/orchestrator/validation-and-retry).

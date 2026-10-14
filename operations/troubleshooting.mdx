@@ -1,0 +1,55 @@
+---
+title: "Rešavanje problema"
+description: "Česti scenariji NexusBot sistema i kako ih prepoznati: tehnički otkaz, nema pristupa, nečitljiv dokument."
+icon: "wrench"
+---
+
+## Tehnički otkaz vs. „nije nađeno"
+
+Ova razlika je kritična — nikad se ne smeju izjednačiti. Kada knowledge source vrati grešku ili timeout (za razliku od nula rezultata), to je tehnički otkaz:
+```
+If a Knowledge source call itself errors or times out 
+(distinct from returning zero relevant results), 
+record it as a technical failure, not as "not found." 
+Retry once; if it fails again, stop that query path and 
+report the technical failure ...
+```
+Source: `sharepoint-intelligent-search-dig-kan-agent-skill.md` (Step 3)
+
+**Simptom:** korisnik dobija poruku da pretraga nije mogla da se izvrši (uz predlog da pokuša ponovo), a ne „nije nađeno u dokumentaciji". Agenti to eksplicitno razlikuju.
+
+Source: `AGENT_DIGITAL_ins.txt` (6. Tool Failure Handling)
+
+## „Nemate pristup" (NEMA_PRISTUPA)
+
+**Simptom:** odgovor `"Nemate pristup. Kontaktirajte IT podršku."` bez pretrage.
+**Uzrok:** odeljenje iz Entra ID-a se ne poklapa (egzaktno) ni sa jednim redom, ili nedostaje → `UserLibrary = NEMA_PRISTUPA`.
+**Rešenje:** proveriti `department` atribut u Entra ID profilu; pristup se ne može dodeliti tvrdnjom u chat-u. Vidi [Rutiranje i kontrola pristupa](/orchestrator/routing-and-access).
+
+## „Drugi sektor" (van opsega)
+
+**Simptom:** `"Ovaj zahtev se odnosi na dokumentaciju drugog sektora..."`
+**Uzrok:** tema zahteva ne pripada domenu korisnikove biblioteke.
+**Rešenje:** obratiti se nadležnom timu ili zatražiti proširenje pristupa.
+
+Source: `nexusbot_orchestrator_system_ins.txt` (STEP 2)
+
+## Nečitljiv dokument (FALLBACK)
+
+**Simptom:** `"Dokument nije čitljiv automatski. Otvorite: [link]"`
+**Uzrok:** original `.pptx`/`.xlsx` ili nečitljiv sadržaj. Vidi [Limiti](/operations/limits).
+**Rešenje:** za CX Portal koristiti INDEX dokumente; inače otvoriti dokument preko linka.
+
+## Delegacija „ne radi" za neki domen
+
+<Info>
+Ako zahtev za `FINTECH` bibliotekom nema izvršioca — to je očekivano: [AGENT_FINTECH i FINTECH biblioteka su planirani](/agents/overview), još nisu implementirani.
+
+Za Digitalne kanale, `AGENT_KANALI` i „Digitalni Kanali Document Assistant" su **isti agent** — dva naziva nisu greška delegacije.
+
+Source: `nexusbot_orchestrator_system_ins.txt` (STEP 2); `_index.md`
+</Info>
+
+## Prazan / FALLBACK rezultat kao „konačan"
+
+Ako se čini da je sistem odustao prerano: po pravilu nikad ne prikazuje potpuno prazan/FALLBACK skup kao konačan bez bar jedne retry iteracije (osim ako je već na iteraciji 3). Vidi [Validacija i retry logika](/orchestrator/validation-and-retry).

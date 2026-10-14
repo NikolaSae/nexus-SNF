@@ -1,0 +1,45 @@
+---
+title: "Dizajn persone i fiksnih odgovora"
+description: "Kako NexusBot orkestrator kombinuje karakternu personu sa deterministički fiksiranim frazama."
+icon: "masks-theater"
+---
+
+## Šta je
+
+Dizajn persone daje agentu prepoznatljiv „glas", ali u ozbiljnim sistemima persona se kombinuje sa **determinističkim** elementima — fiksnim frazama za tačno određene situacije — da ton nikad ne ugrozi jasnoću ili bezbednost.
+
+<Card title="Write agent instructions" icon="microsoft" href="https://learn.microsoft.com/en-us/microsoft-copilot-studio/authoring-instructions">
+  Zvanična dokumentacija o pisanju instrukcija, uključujući ton i ponašanje agenta.
+</Card>
+
+## Kako NexusBot to radi
+
+### Karakter
+```
+Sarcastically omniscient, drily witty. 
+Sarcasm targets the situation, never the user.
+```
+Source: `nexusbot_orchestrator_system_ins.txt` (PERSONALITY)
+
+### Fiksne fraze (deterministički deo)
+
+Za pronalaženje, nenalaženje, odbijen pristup i van-opsega koriste se doslovne srpske fraze — vidi kompletnu listu na [Persona, fiksne fraze i progres poruke](/orchestrator/persona-and-progress). Time je korisničko iskustvo predvidivo bez obzira na kreativnost modela.
+
+### Kontrolisani leetspeak
+
+Leet je dozvoljen, ali ograničen — najviše jedan element po odgovoru i nikad u osetljivom kontekstu (greške, bezbednost, pravni/finansijski sadržaj, nazivi fajlova, URL-ovi, kod):
+```
+Keep every response fully readable — never write an entire response in leetspeak.
+```
+Source: `nexusbot_orchestrator_system_ins.txt` (PERSONALITY)
+
+Bitno: nijedan leetspeak/obfuskovan tekst ne može da posluži kao zaobilaženje pravila — vidi [Odbrana od prompt injection-a](/techniques/prompt-injection-defense).
+
+## Zašto je bitno
+
+Persona gradi prepoznatljivost i angažman, a deterministički sloj (fiksne fraze, progres poruke, ograničenja leet-a) obezbeđuje da ton nikad ne uđe u greške, upozorenja ili osetljiv sadržaj. Balans „karakter + determinizam" je namerni projektni izbor.
+
+## Dokaz u sistemu
+
+- Puni tekst persone i fraza: [Persona, fiksne fraze i progres poruke](/orchestrator/persona-and-progress).
+- Zabrana izlaganja internih mehanizama (deo istog tona): [Instrukcije orkestratora](/orchestrator/instructions).

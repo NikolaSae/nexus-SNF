@@ -1,0 +1,127 @@
+---
+title: "Životni ciklus zahteva"
+description: "Tok jednog korisničkog zahteva od upita do prikaza, uključujući validaciju i retry petlju."
+icon: "arrows-turn-right"
+---
+
+## Tok od upita do odgovora
+
+Jedan zahtev prolazi kroz pet faza orkestratora: klasifikacija (STEP 1), scope + rutiranje (STEP 2), validacija (STEP 3), odluka o ponavljanju (STEP 3.5) i prikaz (STEP 4).
+
+## Sequence dijagram — ceo sistem
+
+```mermaid
+sequenceDiagram
+    actor U as Korisnik
+    participant O as NexusBot orkestrator
+    participant A as Povezani agent
+    participant S as Skill (pretraga)
+    participant K as SharePoint knowledge
+    participant V as validate-search-result
+
+    U->>O: Zahtev (srpski)
+    Note over O: STEP 1 — "⚙️ Klasifikujem zahtev..."
+    O->>O: Klasifikacija intenta + ENTITY
+    Note over O: STEP 2 — scope check + rutiranje po UserLibrary
+    O->>A: original_query, entity, intent, goal
+    Note over O: "🔄 Pretražujem dokumentaciju..."
+    A->>S: pokreni skill
+    S->>K: optimizovan upit (+ fallback lanac)
+    K-->>S: chunkovi sadržaja
+    S-->>A: izvučene činjenice + nazivi + datumi + linkovi
+    A-->>O: rezultat
+    Note over O: STEP 3 — "🔍 Validiram rezultat..."
+    O->>V: original_query, entity, intent, fajlovi
+    V-->>O: PASS / PARTIAL / FAIL
+    alt PARTIAL ili FAIL i iteracija < 3
+        Note over O: STEP 3.5 — "🔄 Iteracija [N] — proširujem pretragu..."
+        O->>A: prošireni/preformulisani upit
+    else PASS ili iteracija = 3
+        Note over O: STEP 4 — prikaz najboljeg rezultata
+        O-->>U: fajlovi + linkovi + izvučen sadržaj
+    end
+```
+
+## Šta se dešava unutar agenta
+
+Gornji dijagram prikazuje razmenu poruka između komponenti. Ovaj zoom-uje unutar povezanog agenta — pipeline koji se odvija između prijema `original_query` od orkestratora i vraćanja rezultata.
+
+```mermaid
+flowchart TD
+    IN(["`**od orkestratora**
+    original_query
+    entity · intent · goal`"]) --> P0
+
+    P0["**Step 0**
+    Derive parameters
+    entity · intent · goal · detected_lang
+    SUB_REQUEST[] za složene zahteve"]
+
+    P0 --> P1["**Step 1**
+    Resolve project + document type
+    mapiranje ključnih reči → kategorija
+    signal termini za Knowledge query"]
+
+    P1 --> P2["**Step 2**
+    Construct query
+    nikad sirov original_query
+    targeted / list-filter / semantic fan-out"]
+
+    P2 --> P3["**Step 3**
+    Execute + fallback chain
+    primarni upit → fallback 2–5
+    budžet: max 15 Knowledge source poziva"]
+
+    P3 --> K[("SharePoint
+    Knowledge source")]
+    K --> P3
+
+    P3 --> P4["**Step 4**
+    Classify · Extract · Rank
+    content type → verbatim ekstrakcija
+    relevance check · ranking"]
+
+    P4 --> DEC{usable?}
+
+    DEC -->|"da — PASS"| OUT
+    DEC -->|"ne — fallback
+    ostaje budžet"| P2
+
+    OUT(["`**ka orkestratoru**
+    title · link · modified · type
+    relevance_reason · flags · content`"])
+
+    style IN fill:#4A148C,color:#fff,stroke:none
+    style OUT fill:#4A148C,color:#fff,stroke:none
+    style K fill:#1a1a2e,color:#fff,stroke:#B388FF
+    style DEC fill:#2d1b4e,color:#fff,stroke:#B388FF
+```
+
+Source: `AGENT_FIN_ins.txt`; `AGENT_DIGITAL_ins.txt`; `AGENT_PORTAL_ins.txt`; `Digitalni-Kanali-Document-Assistant_ins.txt`; skill fajlovi
+
+## Retry petlja
+
+Posle validacije, orkestrator interno prati broj iteracije (počinje od 1, maksimum 3) i najbolji dosad viđen rezultat (prednost: PASS > PARTIAL > FAIL; realan sadržaj iznad praznog/FALLBACK):
+
+| Verdict | Action |
+|---|---|
+| PASS | -> Step 4 |
+| PARTIAL or FAIL, iteration < 3 | broaden the search and retry ... -> Step 2 |
+| iteration = 3 | -> Step 4, using the best result seen across all... |
+
+Source: `nexusbot_orchestrator_system_ins.txt` (STEP 3.5 — RETRY DECISION)
+
+Ako validator vrati grešku ili ništa, to se tretira kao PARTIAL — čime se garantuje bar jedan pokušaj ponavljanja umesto tihog preskakanja validacije:
+
+```
+If the skill errors or returns nothing, treat that as PARTIAL — this
+ensures a retry is attempted rather than silently skipping validation
+```
+
+Source: `nexusbot_orchestrator_system_ins.txt` (STEP 3 — VALIDATE)
+
+Orkestrator nikad ne prikazuje rezultat u kome su svi fajlovi prazni/FALLBACK kao konačan, zadovoljavajući odgovor bez bar jednog pokušaja ponavljanja — osim ako je iteracija već dostigla 3.
+
+Source: `nexusbot_orchestrator_system_ins.txt` (STEP 3.5)
+
+Interne detalje ove logike vidi na [Validacija i retry logika](/orchestrator/validation-and-retry), a sam validator na [validate-search-result](/skills/validate-search-result).

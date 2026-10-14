@@ -1,0 +1,50 @@
+---
+title: "Okruženje i integracije"
+description: "Session context, Entra ID, SharePoint integracije NexusBot sistema i stavke koje su planirane za kasnije."
+icon: "gears"
+---
+
+## Session context
+
+Identitet i pristup izvode se iz sesije i Entra ID profila:
+```
+SESSION CONTEXT User.Email is automatically available from the session. 
+Derive UserLibrary from the user's department (department -> library mapping)
+```
+Source: `nexusbot_orchestrator_system_ins.txt` (SESSION CONTEXT)
+
+Korisnik se oslovljava imenom iz profila sesije; nema memorije između sesija. Detalji rezolucije: [Rutiranje i kontrola pristupa](/orchestrator/routing-and-access).
+
+## SharePoint sajt i biblioteke
+
+Svi knowledge source-i su na jednom SharePoint sajtu:
+```
+SharePoint site: https://contoso.sharepoint.com/sites/DocsHub
+```
+Source: `content-obrada-fin-skill.md`; `sharepoint-intelligent-search-dig-kan-agent-skill.md`
+
+Četiri aktivne biblioteke i njihovi URL-ovi navedeni su na strani [Knowledge source-i](/knowledge/sources).
+
+## Sensitivity labels (Purview)
+
+Skillovi surfaceuju Microsoft Purview sensitivity labele kada su prisutne:
+```
+If a Microsoft Purview sensitivity label is present on a document, 
+include it with the extracted data (e.g., [Confidential]) — never suppress it.
+```
+Source: `content-obrada-fin-skill.md` (Step 4); `sharepoint-intelligent-search-dig-kan-agent-skill.md` (Step 5)
+
+Više: [Purview sensitivity labels](https://learn.microsoft.com/en-us/purview/sensitivity-labels).
+
+## Planirano / još nije definisano
+
+<Info>
+Sledeće stavke okruženja **nisu definisane u izvornim fajlovima** i predstavljaju **planirana** proširenja koja tek treba da budu konfigurisana:
+
+- **Model** (koji LLM pokreće orkestrator i agente) — nije naveden u izvorima.
+- **Kanali objavljivanja** (Teams, web itd.) — nisu navedeni. Vidi [Publish your agent to channels](https://learn.microsoft.com/en-us/microsoft-copilot-studio/publication-fundamentals-publish-channels).
+- **Limiti deploya / runtime verzija** — nisu navedeni.
+- **AGENT_FINTECH i FINTECH biblioteka** — planirani (vidi [Povezani agenti](/agents/overview) i [Knowledge source-i](/knowledge/sources)).
+
+Source: odsustvo u svih 12 izvornih fajlova (`nexusbot_orchestrator_system_ins.txt`, skill i agent fajlovi, `share_info.txt`)
+</Info>

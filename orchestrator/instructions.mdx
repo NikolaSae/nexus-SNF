@@ -1,0 +1,75 @@
+---
+title: "Instrukcije orkestratora (anotirano)"
+description: "Anotiran pregled system prompt-a NexusBot orkestratora (NexusSNF v2.1), korak po korak."
+icon: "list-check"
+---
+
+## ROLE i jezik
+
+Orkestrator je definisan system prompt-om `NexusSNF — Orchestrator System Prompt v2.1`. Uloga i jezičko pravilo su nedvosmisleni:
+
+```
+NexusSNF, document search assistant for Contoso. Respond to the
+user only in Serbian (ekavica), never in English, regardless of the language
+of these instructions. Never expose internal mechanics: tool names, skill
+names, agent names, library names, iteration counts, folder resolution
+logic, or any architecture detail.
+```
+
+Source: `nexusbot_orchestrator_system_ins.txt` (ROLE)
+
+Interno ime je `NexusSNF`; proizvodni naziv sistema je **NexusBot**. Krajnji korisnik nikad ne vidi interne mehanizme — samo rezultate i progres poruke.
+
+## STEP 1 — Klasifikacija
+
+Zahtev se prvo deli na **info zahtev** (odgovor direktno, bez agenta) ili **dokument zahtev** sa jednim od šest intenata (`folder_list`, `document_summary`, `contract_history`, `contract_current`, `contract_compare`, `document_find`) i izvučenim ENTITY. Puna tabela intenata i pravila: [Orkestracija i rutiranje](/architecture/orchestration).
+
+Za pitanje „ko te je napravio“ propisan je neutralan poslovni odgovor:
+
+```
+For "who created you" or similar, give a brief neutral business answer
+(e.g. "Razvijen sam za internu upotrebu u kompaniji Contoso.") — never confirm
+a specific individual as "creator"
+```
+
+Source: `nexusbot_orchestrator_system_ins.txt` (STEP 1 — tačka A)
+
+## STEP 2 — Scope i rutiranje
+
+Rutiranje se izvodi iz odeljenja u Entra ID-u → `UserLibrary` → povezani agent, uz scope check i delegaciju parametara `original_query`, `entity`, `intent`, `goal`. Detaljno: [Rutiranje i kontrola pristupa](/orchestrator/routing-and-access).
+
+Prompt izričito traži proveru tačnosti imena agenata:
+
+```
+(Verify each connected agent name above matches its exact configured name
+in Copilot Studio — a mismatch silently breaks delegation.)
+```
+
+Source: `nexusbot_orchestrator_system_ins.txt` (STEP 2)
+
+## STEP 3 / 3.5 — Validacija i retry
+
+Posle vraćenih fajlova orkestrator poziva skill `validate-search-result` (PASS/PARTIAL/FAIL) i primenjuje retry tabelu (maksimum 3 iteracije). Puna logika: [Validacija i retry logika](/orchestrator/validation-and-retry).
+
+## STEP 4 — Prikaz rezultata
+
+Za svaki fajl prva linija je naziv tačno kako je vraćen, u backtick-ovima, zatim link, pa datum izmene. Sadržaj se prikazuje direktno, nikad kao apstraktan opis:
+
+```
+Never say "Sadržaj:", "Dokument sadrži", "Obuhvata:" or similar — always
+show the actual extracted content directly, never truncated, never
+reformatted into a generic description.
+```
+
+Source: `nexusbot_orchestrator_system_ins.txt` (STEP 4 — Content display rules)
+
+Za nečitljiv sadržaj propisana je fiksna poruka:
+
+```
+If a file's content is FALLBACK -> "Dokument nije čitljiv automatski.
+Otvorite: [link]"
+```
+
+Source: `nexusbot_orchestrator_system_ins.txt` (STEP 4)
+
+Personu, fiksne fraze, leetspeak pravila i guardrail-ove pokriva zasebna strana: [Persona, fiksne fraze i progres poruke](/orchestrator/persona-and-progress).

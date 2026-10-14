@@ -1,0 +1,49 @@
+---
+title: "RAG / grounding (retrieval-first)"
+description: "Kako NexusBot agenti prvo dohvataju dokumentaciju, pa tek onda odgovaraju — grounding nad znanjem modela."
+icon: "book-open"
+---
+
+## Šta je
+
+Retrieval-Augmented Generation (RAG) je obrazac u kome model, pre generisanja odgovora, dohvati relevantne dokumente iz spoljašnjeg izvora i „prizemlji" (ground) odgovor na tom sadržaju, umesto da se oslanja na parametarsko znanje.
+
+<Card title="Retrieval Augmented Generation (RAG) in Azure AI Search" icon="microsoft" href="https://learn.microsoft.com/en-us/azure/search/retrieval-augmented-generation-overview">
+  Zvanična Microsoft definicija RAG arhitekture i grounding obrasca.
+</Card>
+
+U Copilot Studiju grounding se ostvaruje preko [knowledge source-a](https://learn.microsoft.com/en-us/microsoft-copilot-studio/knowledge-add-sharepoint) (ovde: SharePoint biblioteke).
+
+## Kako NexusBot to radi
+
+Svaki domenski agent ima **retrieval-first** pravilo — pretraga je obavezna, odgovor iz znanja modela zabranjen kada odgovor treba da bude u dokumentaciji:
+```
+Retrieval is mandatory. Never answer from model knowledge when 
+documentation is expected to contain the answer, and never skip 
+retrieval because you believe you already know the answer.
+```
+Source: `AGENT_DIGITAL_ins.txt` (1. Retrieval First)
+
+Dokumentacija ima prioritet nad znanjem modela i kod konflikta:
+```
+Retrieved documentation has higher priority than model knowledge. 
+If documentation conflicts with model knowledge, trust the documentation.
+```
+Source: `AGENT_PORTAL_ins.txt` (Documentation Over Model Knowledge)
+
+Skillovi to sprovode tehnički — grade upit i čitaju isključivo iz knowledge source-a, uz zabranu izmišljanja sadržaja:
+```
+Do not answer from general knowledge when SharePoint content 
+is expected to contain the answer — always retrieve first.
+```
+Source: `sharepoint-intelligent-search-dig-kan-agent-skill.md` (frontmatter)
+
+## Grounding + citiranje
+
+Grounding se ne završava dohvatanjem — svaki odgovor nosi izvor: tačan naziv dokumenta, link i datum izmene. Skill `sharepoint-intelligent-search` eksplicitno „returns citations with source links". Time je svaka tvrdnja proverljiva do dokumenta.
+
+## Dokaz u sistemu
+
+- Obavezan retrieval po agentu: [AGENT_DIGITAL](/agents/digital), [AGENT_PORTAL](/agents/cx-portal).
+- Verbatim izvlačenje bez izmišljanja: [Klasifikacija i ekstrakcija](/techniques/content-classification-extraction).
+- Razlikovanje „nije nađeno" od tehničkog otkaza (da grounding ne bude lažno prazan): [Rešavanje problema](/operations/troubleshooting).

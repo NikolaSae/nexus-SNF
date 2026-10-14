@@ -1,0 +1,48 @@
+---
+title: "Podešavanja i limiti"
+description: "Numerički limiti i pravila prioritizacije zabeleženi u instrukcijama i skillovima NexusBot sistema."
+icon: "sliders"
+---
+
+## Ključni limiti
+
+| Podešavanje | Vrednost | Gde je definisano |
+|---|---|---|
+| Search budget (pozivi ka knowledge source-u) | **15** po zahtevu | skillovi za pretragu |
+| Maksimum iteracija (retry) | **3** | orkestrator STEP 3.5 |
+| Broj vraćenih dokumenata | **do 5** | domenski skillovi |
+
+## Search budget (15)
+```
+Search budget: cap total Knowledge source calls at 15 per user request 
+(across all sub-requests from Step 0).
+```
+Source: `content-obrada-fin-skill.md` (Step 3); identično u `sharepoint-intelligent-search-dig-kan-agent-skill.md` (Step 3)
+
+Kada se budžet dostigne pre kraja fallback lanca, pretraga se zaustavlja i prijavljuje se šta je pokriveno, a šta ne — da orkestrator korisniku kaže da je pretraga bila delimična.
+
+## Max iteracije (3)
+```
+iteration count (starts at 1, max 3)
+```
+Source: `nexusbot_orchestrator_system_ins.txt` (STEP 3.5)
+
+Detalji retry logike: [Validacija i retry logika](/orchestrator/validation-and-retry).
+
+## Vraćanje do 5 dokumenata
+```
+Return up to 5 relevant documents. If more than 5 qualify, select by:
+Document type priority (per intent ...)
+Newest date within same priority level
+```
+Source: `search-digital-documents-skill.md` (Retrieval Strategy); slično u `search-cx-portal-documents-skill.md` (RETRIEVAL STRATEGY)
+
+Broj pretraga po intentu takođe je ograničen: `document_find` → 1 (+ fallback), `contract_history`/`document_summary` → do 5.
+
+Source: `content-obrada-fin-skill.md` (Step 3)
+
+## Prioritizacija dokumenata
+
+Svaki domenski agent/skill definiše redosled prioriteta po tipu pitanja (operativni, ugovorni, governance, benchmark, matrice, SSO...). Pregledi po agentu: [DIGITAL](/agents/digital), [PORTAL](/agents/cx-portal). Preferiraju se najnovije, odobrene i finalne verzije; deprioritizuju se draft, template i zastareli dokumenti.
+
+Za operativne limite (čitljivost formata, FALLBACK) vidi [Limiti](/operations/limits).

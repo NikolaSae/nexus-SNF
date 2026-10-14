@@ -1,0 +1,56 @@
+---
+title: "Konstrukcija upita i fallback lanci"
+description: "Kako NexusBot skillovi grade optimizovane upite, prolaze fallback lance i poštuju budžet pretrage."
+icon: "magnifying-glass"
+---
+
+## Šta je
+
+Kvalitet dohvaćenog sadržaja u RAG sistemu presudno zavisi od kvaliteta upita. Umesto prosleđivanja sirovog korisničkog teksta, skillovi grade ciljane upite (signal termini + jezgro entiteta) i, ako primarni ne uspe, prolaze niz sve širih **fallback** upita.
+
+<Card title="Use prompts to make your agent perform specific tasks" icon="microsoft" href="https://learn.microsoft.com/en-us/microsoft-copilot-studio/nlu-prompt-node">
+  Zvanična dokumentacija o kreiranju prompt alata (skillova) u Copilot Studiju.
+</Card>
+
+## Kako NexusBot to radi
+
+### Nikad sirov query
+```
+Never pass raw original_query to the Knowledge source.
+```
+Source: `content-obrada-fin-skill.md` (Step 2)
+
+Upit se sklapa od signal termina (po kategoriji) i očišćenog jezgra entiteta, uz intent-specifična doterivanja (npr. `contract_current` dodaje „poslednji aneks aktuelni datum važenja").
+
+### Fallback lanac
+```
+Primary query (Step 2c + 2d)
+Core entity only, no signal terms
+Category + entity without specifics
+Broadest: category signal only
+```
+Source: `content-obrada-fin-skill.md` (Step 2e)
+
+`sharepoint-intelligent-search` ima analogan lanac plus **semantic fan-out** (2–4 varijante) kada projekat/tip nisu razrešeni, uz deduplikaciju rezultata ≥80% preklapanja.
+
+Source: `sharepoint-intelligent-search-dig-kan-agent-skill.md` (Step 2, Step 3)
+
+### Budžet i tehnički otkaz
+```
+Search budget: cap total Knowledge source calls at 15 per user request ... 
+If a Knowledge source call itself errors or times out (distinct from returning 
+zero relevant results), record it as a technical failure ...
+```
+Source: `content-obrada-fin-skill.md` (Step 3); `sharepoint-intelligent-search-dig-kan-agent-skill.md` (Step 3)
+
+Kada lanac ne vrati ništa, skill prijavljuje **koje** je upite probao — da orkestrator korisniku da precizno objašnjenje umesto generičkog „nije nađeno".
+
+## Zašto je bitno
+
+Signal termini povećavaju preciznost, fallback povećava recall, budžet garantuje terminaciju, a razlikovanje otkaza od praznog rezultata sprečava lažne negative. Zajedno čine pretragu i tačnom i predvidivom.
+
+## Dokaz u sistemu
+
+- Pipeline FIN skilla: [content-obrada-fin](/skills/content-obrada-fin).
+- Strategije Digitalnih kanala: [sharepoint-intelligent-search](/skills/sharepoint-intelligent-search).
+- Numerički limiti: [Podešavanja i limiti](/configuration/settings).

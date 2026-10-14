@@ -1,0 +1,51 @@
+---
+title: "Tehnike i principi — pregled"
+description: "Obrasci projektovanja koji se koriste kroz NexusBot sistem, sa vezama ka dokazima u izvorima."
+icon: "lightbulb"
+---
+
+## Tehnike u sistemu
+
+NexusBot kombinuje nekoliko obrazaca projektovanja AI agenata. Svaka strana ispod objašnjava *šta je* tehnika (uz zvaničan link) i *kako je ovaj sistem koristi* (uz dokaz iz izvornih fajlova).
+
+<CardGroup cols={2}>
+  <Card title="Multi-agent orkestracija" icon="diagram-project" href="/techniques/multi-agent-orchestration">
+    Orkestrator + povezani domenski agenti, rutiranje po odeljenju.
+  </Card>
+  <Card title="RAG / grounding" icon="book-open" href="/techniques/rag-grounding">
+    Retrieval-first: dokumentacija ispred znanja modela.
+  </Card>
+  <Card title="Odbrana od prompt injection-a" icon="shield" href="/techniques/prompt-injection-defense">
+    Sav vraćeni sadržaj je podatak, nikad instrukcija.
+  </Card>
+  <Card title="Kontrola pristupa preko identiteta" icon="id-badge" href="/techniques/identity-access-control">
+    Pristup isključivo iz Entra ID odeljenja.
+  </Card>
+  <Card title="Validacija + retry petlja" icon="rotate" href="/techniques/validation-retry-loop">
+    PASS/PARTIAL/FAIL i do 3 iteracije.
+  </Card>
+  <Card title="Konstrukcija upita i fallback" icon="magnifying-glass" href="/techniques/query-construction-fallback">
+    Signal termini, fallback lanci, fan-out, budžet.
+  </Card>
+  <Card title="Klasifikacija i ekstrakcija" icon="layer-group" href="/techniques/content-classification-extraction">
+    Tipovi sadržaja i verbatim izvlačenje podataka.
+  </Card>
+  <Card title="Dizajn persone" icon="masks-theater" href="/techniques/persona-design">
+    Fiksne fraze, sarkazam, kontrolisani leetspeak.
+  </Card>
+</CardGroup>
+
+## Gde se koriste
+
+| Tehnika | Nosioci u sistemu |
+|---|---|
+| Multi-agent orkestracija | Orkestrator STEP 2, svi agenti |
+| RAG / grounding | Svi domenski agenti i skillovi |
+| Prompt injection defense | Orkestrator (AUTHORITY), svi skillovi (DATA vs. instructions) |
+| Kontrola pristupa | Orkestrator (SESSION CONTEXT) |
+| Validacija + retry | Orkestrator STEP 3/3.5, `validate-search-result` |
+| Konstrukcija upita | `content-obrada-fin`, `sharepoint-intelligent-search` |
+| Klasifikacija/ekstrakcija | `content-obrada`, svi domenski skillovi |
+| Dizajn persone | Orkestrator (PERSONALITY) |
+
+Source: sinteza svih 12 izvornih fajlova

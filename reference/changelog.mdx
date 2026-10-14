@@ -1,0 +1,40 @@
+---
+title: "Changelog"
+description: "Istorija verzija NexusBot dokumentacije i zabeležene verzije komponenti sistema."
+icon: "clock-rotate-left"
+---
+
+## Dokumentacija
+
+<Update label="v1.0.0 — 2026-07-14" description="Inicijalna dokumentacija">
+  Prva verzija kompletne dokumentacije NexusBot sistema, generisana iz exporta `agent-files-docs` (12 izvornih fajlova, indeks `_index.md`).
+
+  **Obuhvata:**
+  - Orkestrator (`NexusSNF v2.1`): instrukcije, rutiranje/pristup, validacija/retry, persona
+  - 4 povezana agenta i 6 skillova
+  - 4 SharePoint knowledge source-a
+  - 8 tehnika i principa (sa zvaničnim referencama)
+  - Konfiguracija, limiti, rešavanje problema, rečnik
+
+  **Zabeležene otvorene stavke (planirano za kasnije):**
+  - `AGENT_FINTECH` i `FINTECH` biblioteka — planirani, još nisu implementirani
+  - Model, kanali objavljivanja, limiti deploya / runtime verzija — nisu definisani u izvorima
+</Update>
+
+## Zabeležene verzije komponenti
+
+Verzije komponenti kako su navedene u izvornim fajlovima:
+
+| Komponenta | Verzija | Napomena |
+|---|---|---|
+| Orkestrator (system prompt) | `v2.1` | `NexusSNF — Orchestrator System Prompt v2.1` |
+| `content-obrada-fin` | `v1.2` | v1.1 uveo injection defense, multi-category split, ambiguity note, search budget; v1.2 dodao provider-switch check za Parking `contract_current` i razrešavanje aktuelnog ugovora pre poređenja |
+| `sharepoint-intelligent-search` | `v3.0.0` | Konsolidovao stariji `digitalni-kanali-document-search` u jedan skill + SharePoint Lists podrška + hand-back arhitektura |
+
+Source: `nexusbot_orchestrator_system_ins.txt` (naslov); `content-obrada-fin-skill.md` (v1.2 napomena); `sharepoint-intelligent-search-dig-kan-agent-skill.md` (v3.0.0 napomena)
+
+<Note>
+Napomena uz `sharepoint-intelligent-search v3.0.0`: stari skill `digitalni-kanali-document-search` treba deaktivirati na agentu Digitalni Kanali — istovremeno pokretanje oba uvelo bi dvosmislenost rutiranja između dva skilla koji pokrivaju isti sadržaj. Taj stariji skill nije deo ovog exporta.
+
+Source: `sharepoint-intelligent-search-dig-kan-agent-skill.md` (v3.0.0 napomena)
+</Note>

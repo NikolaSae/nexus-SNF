@@ -1,0 +1,45 @@
+---
+title: "Validacija + retry petlja"
+description: "Kako NexusBot ocenjuje rezultat pretrage i ponavlja je do 3 puta pre prikaza."
+icon: "rotate"
+---
+
+## Šta je
+
+Umesto da prvi rezultat pretrage prihvati kao konačan, agent ga prvo **oceni** i, ako nije dovoljno dobar, **ponovi** pretragu sa izmenjenim parametrima — samokorektivna petlja koja podiže pouzdanost odgovora. Obrazac se oslanja na generativnu orkestraciju.
+
+<Card title="Orchestrate agent behavior with generative AI" icon="microsoft" href="https://learn.microsoft.com/en-us/microsoft-copilot-studio/advanced-generative-actions">
+  Zvanična dokumentacija o generativnoj orkestraciji u Copilot Studiju.
+</Card>
+
+## Kako NexusBot to radi
+
+Nakon što agent vrati fajlove, orkestrator poziva `validate-search-result` i dobija PASS/PARTIAL/FAIL. Ako validator otkaže, tretira se kao PARTIAL — da se retry ne preskoči:
+```
+If the skill errors or returns nothing, treat that as PARTIAL — 
+this ensures a retry is attempted rather than silently skipping validation ...
+```
+Source: `nexusbot_orchestrator_system_ins.txt` (STEP 3)
+
+Odluka o ponavljanju je tabelarna, sa najviše 3 iteracije i praćenjem najboljeg rezultata:
+
+| PASS | -> Step 4 | | PARTIAL or FAIL, iteration < 3 | broaden the search and retry ... -> Step 2 | | iteration = 3 | -> Step 4, using the best result seen ... |
+
+Source: `nexusbot_orchestrator_system_ins.txt` (STEP 3.5)
+
+Sam validator ima intent-specifična pravila (npr. `contract_compare` traži ≥2 upotrebljiva fajla za PASS) i sudi po stvarnom sadržaju, ne po nazivu fajla:
+```
+Judge relevance from the actual content field, never from how 
+plausible or on-topic the filename looks.
+```
+Source: `validate-search-result.md` (SCORING)
+
+## Zašto je bitno
+
+Petlja sprečava da prazan ili FALLBACK rezultat prođe kao „gotov" odgovor bez pokušaja poboljšanja, a istovremeno garantuje terminaciju (maksimum 3). To spaja pouzdanost sa predvidivim ponašanjem.
+
+## Dokaz u sistemu
+
+- Orkestratorova logika: [Validacija i retry logika](/orchestrator/validation-and-retry).
+- Skill validatora: [validate-search-result](/skills/validate-search-result).
+- Tok u dijagramu: [Životni ciklus zahteva](/architecture/data-flow).

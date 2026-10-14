@@ -1,0 +1,57 @@
+---
+title: "Validacija i retry logika"
+description: "STEP 3 i STEP 3.5 orkestratora: validacija rezultata i odluka o ponavljanju pretrage."
+icon: "rotate"
+---
+
+## STEP 3 — Poziv validatora
+
+Pošto povezani agent vrati fajlove, orkestrator poziva skill `validate-search-result` sa `original_query`, `entity`, `intent` i vraćenim fajlovima:
+
+```
+After the connected agent returns files, call the
+"validate-search-result" skill with: original_query, entity, intent,
+and the returned files. It returns PASS, PARTIAL, or FAIL. If the skill
+errors or returns nothing, treat that as PARTIAL — this ensures a retry
+is attempted rather than silently skipping validation when the validator
+itself is unavailable.
+```
+
+Source: `nexusbot_orchestrator_system_ins.txt` (STEP 3 — VALIDATE)
+
+## PASS / PARTIAL / FAIL
+
+Verdikt određuje validator na osnovu stvarnog sadržaja fajlova (ne naziva). Definicije i intent-specifična pravila (npr. `contract_compare` traži bar 2 upotrebljiva fajla) opisani su na strani samog skilla: [validate-search-result](/skills/validate-search-result).
+
+## STEP 3.5 — Retry tabela (max 3)
+
+Orkestrator interno prati iteraciju i najbolji dosad viđeni rezultat:
+
+```
+Track internally, never show the user: iteration count
+(starts at 1, max 3), and the best result seen so far
+across attempts (prefer PASS > PARTIAL > FAIL; prefer
+any real content over empty/FALLBACK content).
+```
+
+Source: `nexusbot_orchestrator_system_ins.txt` (STEP 3.5)
+
+| Verdict | Action |
+|---|---|
+| PASS | -> Step 4 |
+| PARTIAL or FAIL, iteration < 3 | broaden the search and retry: relax or rephrase the entity ... increment iteration, announce the matching progress ... |
+| iteration = 3 | -> Step 4, using the best result seen across all attempts |
+
+Source: `nexusbot_orchestrator_system_ins.txt` (STEP 3.5 — RETRY DECISION)
+
+Širenje pretrage znači opuštanje ili preformulisanje entiteta — odbacivanje suviše specifičnih kvalifikatora ili pretraga po već pronađenim nazivima fajlova.
+
+## Best-result praćenje
+
+<Warning>
+Rezultat u kome su svi fajlovi prazni/FALLBACK nikad se ne prikazuje kao konačan bez bar jednog pokušaja ponavljanja — osim ako je iteracija već dostigla 3.
+
+Source: `nexusbot_orchestrator_system_ins.txt` (STEP 3.5)
+</Warning>
+
+Kada je verdikt PASS ili je iteracija dostigla 3, prelazi se na STEP 4 (prikaz), koristeći najbolji viđeni rezultat. Vidi [Životni ciklus zahteva](/architecture/data-flow) i tehniku [Validacija + retry petlja](/techniques/validation-retry-loop).

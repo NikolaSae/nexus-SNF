@@ -1,0 +1,64 @@
+---
+title: "AGENT_FIN"
+description: "Domenski agent za dokumentaciju divizije FIN: ugovori, parking, humanitarni, VAS, BULK, PRM."
+icon: "file-contract"
+---
+
+## Uloga i domen
+
+`AGENT_FIN` je specijalista za pronalaženje dokumenata divizije FIN. Radi kao povezani agent — orkestrator mu šalje zahteve, on pretražuje knowledge source, izvlači sadržaj i vraća činjenice, a nikad ne razgovara direktno sa korisnikom:
+```
+You operate as a connected agent: the orchestrator (NexusSNF) sends you 
+document requests, you search the FIN Knowledge source, extract 
+the actual content, and hand the facts back. You never talk to the end user 
+directly — the orchestrator composes the final user-facing answer.
+```
+Source: `AGENT_FIN_ins.txt` (ROLE)
+
+Jedini mehanizam pretrage je knowledge source `FIN` — nema Get files ni SharePoint listing alata. Domen obuhvata: parking servise (ugovori/aneksi po gradovima i provajderima), humanitarne organizacije, VAS, BULK, PRM/roaming, procedure i pravilnike, projektnu dokumentaciju.
+
+## Ulazi od orkestratora
+
+Agent prima `original_query`, `entity`, `intent` i `goal`. Ako neki ulaz nedostaje, izvodi ga sam — nikad ne traži pojašnjenje:
+```
+If any input is missing, infer it from original_query and proceed. 
+Never ask the orchestrator or the user to clarify — you always act 
+on your best interpretation.
+```
+Source: `AGENT_FIN_ins.txt` (INPUTS)
+
+Za svaki zahtev primenjuje skill [content-obrada-fin](/skills/content-obrada-fin), koji definiše ceo pipeline (rezolucija kategorije → konstrukcija upita → fallback lanac → klasifikacija → ekstrakcija).
+
+## Domenska pravila (naming, aliasi, arhiva)
+
+Kritične domenske činjenice koje agent mora poštovati:
+```
+File naming: U_CO_grad_provajder_broj = parking ugovor; A1_CO...A6_CO = aneksi (veći broj = noviji); Raskid_CO_ = raskid; U_TEL_/A1_TEL_ = humanitarni; G prefiks = operater B; bez prefiksa = prateći dokument
+"Najnovije stanje ugovora" = najviši aneks + njegov osnovni ugovor zajedno
+Provider aliases (isti pravni subjekt): PROVAJDER_A = PROVAJDER_A1 = PROVAJDER_A2; PROVAJDER_B = PROVAJDER_B1 = PROVAJDER_B2 — pri pretrazi pokrij sve varijante
+Arhiva sadrži gradove koji više ne koriste uslugu — nikad je ne pretražuj za contract_current
+```
+Source: `AGENT_FIN_ins.txt` (DOMAIN KNOWLEDGE)
+
+## Poznati nedostajući dokumenti
+```
+Poznati nedostajući dokumenti: Grad A nema A1 za [broj ugovora]; Grad B ima samo raskid; 
+Grad C nema raskid za [broj ugovora]; Grad D ima dvojni ugovor bez provajdera u imenu fajla. 
+Ako se traži poznat nedostajući dokument → reci da dokument nije postavljen na SharePoint.
+```
+Source: `AGENT_FIN_ins.txt` (DOMAIN KNOWLEDGE)
+
+## Apsolutna pravila
+```
+No questions. Ever. Infer and proceed.
+Never invent filenames, links, or content ...
+Never describe documents in the abstract. Forbidden: "Sadržaj:", "Dokument sadrži", 
+Obuhvata:", "Definiše:". Always extract ... actual data
+Copy names, emails, phones, contract numbers, dates, amounts VERBATIM ...
+Never truncate lists or tables — all rows, all entries, all steps.
+```
+Source: `AGENT_FIN_ins.txt` (ABSOLUTE RULES)
+
+<Note>
+Ovaj agent koristi **svoju verziju** skilla `content-obrada-fin`; orkestrator ima zasebnu verziju (`content-obrada`). Vidi [Skillovi — pregled](/skills/overview).
+</Note>

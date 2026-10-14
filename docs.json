@@ -1,0 +1,108 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "NexusBot",
+  "colors": {
+    "primary": "#8A2BE2",
+    "light": "#B388FF",
+    "dark": "#4A148C"
+  },
+  "favicon": "/favicon.svg",
+  "navigation": {
+    "groups": [
+      {
+        "group": "Uvod",
+        "pages": [
+          "index",
+          "quickstart"
+        ]
+      },
+      {
+        "group": "Arhitektura",
+        "pages": [
+          "architecture/overview",
+          "architecture/orchestration",
+          "architecture/data-flow"
+        ]
+      },
+      {
+        "group": "Orkestrator (NexusSNF)",
+        "pages": [
+          "orchestrator/instructions",
+          "orchestrator/routing-and-access",
+          "orchestrator/validation-and-retry",
+          "orchestrator/persona-and-progress"
+        ]
+      },
+      {
+        "group": "Povezani agenti",
+        "pages": [
+          "agents/overview",
+          "agents/fin",
+          "agents/digital",
+          "agents/cx-portal",
+          "agents/digitalni-kanali"
+        ]
+      },
+      {
+        "group": "Skillovi",
+        "pages": [
+          "skills/overview",
+          "skills/content-obrada",
+          "skills/content-obrada-fin",
+          "skills/search-digital-documents",
+          "skills/search-cx-portal-documents",
+          "skills/sharepoint-intelligent-search",
+          "skills/validate-search-result"
+        ]
+      },
+      {
+        "group": "Knowledge",
+        "pages": [
+          "knowledge/sources"
+        ]
+      },
+      {
+        "group": "Konfiguracija",
+        "pages": [
+          "configuration/settings",
+          "configuration/environment"
+        ]
+      },
+      {
+        "group": "Tehnike i principi",
+        "pages": [
+          "techniques/overview",
+          "techniques/multi-agent-orchestration",
+          "techniques/rag-grounding",
+          "techniques/prompt-injection-defense",
+          "techniques/identity-access-control",
+          "techniques/validation-retry-loop",
+          "techniques/query-construction-fallback",
+          "techniques/content-classification-extraction",
+          "techniques/persona-design"
+        ]
+      },
+      {
+        "group": "Operacije",
+        "pages": [
+          "operations/limits",
+          "operations/troubleshooting"
+        ]
+      },
+      {
+        "group": "Reference",
+        "pages": [
+          "reference/glossary",
+          "reference/changelog"
+        ]
+      },
+      {
+        "group": "Rezime",
+        "pages": [
+          "summary"
+        ]
+      }
+    ]
+  }
+}

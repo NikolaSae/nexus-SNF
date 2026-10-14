@@ -1,0 +1,77 @@
+---
+title: "Knowledge source-i"
+description: "Četiri SharePoint biblioteke iz kojih NexusBot agenti čitaju stvaran sadržaj dokumenata."
+icon: "database"
+---
+
+## Pregled
+
+Svi povezani agenti čitaju sadržaj iz SharePoint biblioteka na sajtu `https://contoso.sharepoint.com/sites/DocsHub`. Knowledge source je jedini mehanizam dohvatanja — ne postoji „Get files“ ni listing alat.
+
+## Biblioteke
+
+### FIN
+
+```
+Document retrieval specialist for the FIN division of Contoso.
+Searches and extracts content from contracts, annexes, parking agreements,
+humanitarian organization contracts, VAS/BULK/PRM service agreements, rulebooks,
+forms, and procedures. https://contoso.sharepoint.com/sites/DocsHub/Fin
+```
+
+Source: `share_info.txt` (FIN)
+
+### DIGITAL
+
+```
+Search this source to read document content from the DIGITAL library.
+Contains documentation for digital B2C projects: Identity Protect (Identity Protection, external
+partner), Safe Home Net, Safe Net, and VR servis.
+https://contoso.sharepoint.com/sites/DocsHub/Digital
+```
+
+Source: `share_info.txt` (DIGITAL)
+
+### PORTAL
+
+```
+Search this source to read document content from the PORTAL library.
+Contains benchmark analyses, purchase and payment matrices, SSO concept documents,
+and functional requirements for the CX portal.
+https://contoso.sharepoint.com/sites/DocsHub/Portal
+```
+
+Source: `share_info.txt` (PORTAL)
+
+### KANALI
+
+```
+Search this source to read the full content of technical documents from the
+Digitalni kanali division. ... Contains architecture documents, [redigovano],
+deploy procedures, incident management processes, monitoring tools,
+[redigovano], and roadmaps ...
+https://contoso.sharepoint.com/sites/DocsHub/Kanali
+```
+
+Source: `share_info.txt` (KANALI)
+
+## Mapiranje biblioteka ↔ agent
+
+| Biblioteka | Agent |
+|---|---|
+| `FIN` | [AGENT_FIN](/agents/fin) |
+| `DIGITAL` | [AGENT_DIGITAL](/agents/digital) |
+| `PORTAL` | [AGENT_PORTAL](/agents/cx-portal) |
+| `KANALI` | [Digitalni Kanali Document Assistant](/agents/digitalni-kanali) |
+
+Source: `share_info.txt`; `nexusbot_orchestrator_system_ins.txt` (STEP 2)
+
+<Info>
+**FINTECH biblioteka (planirana).** Ruting tabela orkestratora sadrži `UserLibrary = FINTECH`, ali `share_info.txt` opisuje **4 od 5** biblioteka — FINTECH nema opis ni URL. Reč je o **planiranom** knowledge source-u, uz planirani [AGENT_FINTECH](/agents/overview); do implementacije, FINTECH nema pridružen izvor.
+
+Source: `share_info.txt` (odsustvo FINTECH-a); `nexusbot_orchestrator_system_ins.txt` (STEP 2)
+</Info>
+
+## Vezano
+
+Kako se dolazi do prave biblioteke — [Rutiranje i kontrola pristupa](/orchestrator/routing-and-access). Za rad sa SharePoint listama — [sharepoint-intelligent-search](/skills/sharepoint-intelligent-search) i [SharePoint Lists](https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/working-with-lists-and-list-items-with-rest).

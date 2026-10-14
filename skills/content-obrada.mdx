@@ -1,0 +1,77 @@
+---
+title: "content-obrada"
+description: "Skill orkestratora za klasifikaciju i verbatim ekstrakciju sadržaja FIN dokumenata."
+icon: "layer-group"
+---
+
+## Namena
+
+`content-obrada` je verzija skilla u vlasništvu **NexusBot orkestratora**. Klasifikuje izvučeni sadržaj dokumenta i izvlači stvarne podatke, aktivira se pošto je sadržaj dohvaćen, pre građenja response JSON-a:
+
+```
+Classifies retrieved document content and extracts actual data for
+FIN documents. Activates after document content has been
+retrieved, before building the response JSON.
+```
+
+Source: `content-obrada-nexus-skill.md` (frontmatter `description`)
+
+Primenjuje se na svaki fajl sa nepraznim sadržajem (ne `""` i ne `FALLBACK`).
+
+<Info>
+Ovo je **verzija orkestratora**. Agent `AGENT_FIN` ima svoju, zasebnu verziju: [content-obrada-fin](/skills/content-obrada-fin). Dve verzije istog koncepta razvijaju se nezavisno.
+
+Source: `content-obrada-nexus-skill.md`; `_index.md`
+</Info>
+
+## Klasifikacija tipova
+
+| Tip sadržaja | Signali |
+|---|---|
+| `contract` | ugovor, aneks, strane, zastupnik, provizija, sud, primerci |
+| `parking_list` | parking, grad, provajder, lokacija, isticanje |
+| `agreement` | sporazum, saglasnost, strane, stupanje na snagu |
+| `rulebook` | pravilnik, član, stupa na snagu, službeni |
+| `form` | obrazac, polje, popunjava, uputstvo za popunjavanje |
+| `procedure` | korak, procedura, redosled, uputstvo |
+| `general` | sve ostalo |
+
+Source: `content-obrada-nexus-skill.md` (Step 1 — Classify content type)
+
+## Ekstrakcija po tipu
+
+Za svaki tip izvlače se konkretni elementi — npr. za `contract`: broj ugovora, datumi (potpisivanje, važenje, isticanje), strane + zastupnici, predmet, provizija, nadležni sud, broj primeraka; za `parking_list`: sve lokacije (grad, provajder, broj ugovora, isticanje); za `procedure`: svi numerisani koraci u originalnom redosledu.
+
+Source: `content-obrada-nexus-skill.md` (Step 2 — Extract by type)
+
+## Pravila ekstrakcije (svi tipovi)
+
+```
+Copy names, emails, phones, contract numbers, dates, amounts VERBATIM. Never normalize, never invent.
+Never use placeholder/sequential values (111 222...). Unclear data -> content = "FALLBACK".
+NEVER describe what a document contains. Forbidden: "Sadržaj:", "Dokument sadrži", "Obuhvata:", "Definiše:".
+ALWAYS extract actual data — real steps, real dates, real names.
+Never truncate lists or tables. All rows, all entries, all steps.
+Multiple chunks for same file -> merge ALL first, then classify.
+```
+
+Source: `content-obrada-nexus-skill.md` (Step 3 — Extraction rules)
+
+## Naming konvencije
+
+| Obrazac | Značenje |
+|---|---|
+| `U_CO_grad_provajder_broj.pdf` | parking ugovor |
+| `A1_CO_` … `A6_CO_` | aneks (veći broj = noviji) |
+| `Raskid_CO_` | raskid |
+| `P_CO_` / `P-1_CO_` | prilog |
+| `U_TEL_kratkiBroj_naziv_broj.pdf` | humanitarni ugovor |
+| `A1_TEL_` … `A6_TEL_` | aneks; posle A6 novi `U_TEL_` nasleđuje stari lanac |
+| `G` prefiks (umesto `CO`) | operater B |
+| bez prefiksa | prateći dokument |
+
+„Najnovije stanje ugovora“ = najviši aneks + njegov osnovni ugovor, zajedno.
+
+Source: `content-obrada-nexus-skill.md` (File naming conventions)
+
+Nakon ekstrakcije sledi provera relevantnosti (pozitivni/negativni signali) koja odlučuje da li se dokument uključuje. Šire o principu: [Klasifikacija sadržaja i verbatim ekstrakcija](/techniques/content-classification-extraction).

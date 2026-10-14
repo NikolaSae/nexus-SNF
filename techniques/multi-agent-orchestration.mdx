@@ -1,0 +1,43 @@
+---
+title: "Multi-agent orkestracija"
+description: "Obrazac orkestrator + povezani agenti, i kako ga NexusBot primenjuje kroz rutiranje po odeljenju."
+icon: "diagram-project"
+---
+
+## Šta je
+
+Multi-agent orkestracija je obrazac u kome centralni („orchestrator") agent prima zahtev i delegira ga specijalizovanim, povezanim agentima, umesto da sve radi sam. U Copilot Studiju to su **connected agents**, sa preporukama kada koristiti inline vs. connected obrazac.
+
+<Card title="Multi-agent orchestration patterns and best practices" icon="microsoft" href="https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/multi-agent-patterns">
+  Zvanična Microsoft Learn dokumentacija o multi-agent obrascima u Copilot Studiju.
+</Card>
+
+Vidi i [Orchestrate agent behavior with generative AI](https://learn.microsoft.com/en-us/microsoft-copilot-studio/advanced-generative-actions) za generativnu orkestraciju.
+
+## Kako NexusBot to radi
+
+NexusBot orkestrator ne pretražuje sam — on klasifikuje zahtev i delegira ga jednom od četiri povezana agenta, birajući ga po korisnikovoj biblioteci:
+```
+If in scope, delegate to the connected agent matching UserLibrary, 
+passing: original_query, entity, intent, goal.
+```
+Source: `nexusbot_orchestrator_system_ins.txt` (STEP 2)
+
+Prosleđene vrednosti su autoritativne — agent ih koristi umesto da iznova izvodi svoju klasifikaciju. Svaki agent je specijalista za svoj domen (vidi [Povezani agenti](/agents/overview)) i vraća činjenice orkestratoru, koji tek onda komponuje finalni odgovor.
+
+Orkestrator čak eksplicitno traži proveru da se imena agenata poklapaju sa konfigurisanim, jer nesklad tiho lomi delegaciju:
+```
+(Verify each connected agent name above matches its exact 
+configured name in Copilot Studio — a mismatch silently breaks delegation.)
+```
+Source: `nexusbot_orchestrator_system_ins.txt` (STEP 2)
+
+## Dokaz u sistemu
+
+- Rutiranje po biblioteci: [Orkestracija i rutiranje](/architecture/orchestration).
+- Podela orkestrator ↔ agenti: [Arhitektura — pregled](/architecture/overview).
+- Tok delegacije i vraćanja: [Životni ciklus zahteva](/architecture/data-flow).
+
+<Info>
+Peti red rutiranja (`FINTECH → AGENT_FINTECH`) je **planiran** — obrazac je predviđen za buduće proširenje sistema još jednim povezanim agentom.
+</Info>

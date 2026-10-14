@@ -1,0 +1,65 @@
+---
+title: "sharepoint-intelligent-search (v3.0.0)"
+description: "Skill agenta Digitalni Kanali za grounded pretragu SharePoint biblioteka i lista sa citiranjem."
+icon: "sitemap"
+---
+
+## Namena
+
+`sharepoint-intelligent-search` dohvata grounded, citiran sadržaj iz povezanih SharePoint Online knowledge source-a — i biblioteka dokumenata i SharePoint lista:
+```
+Searches and retrieves grounded, cited information from connected SharePoint 
+Online knowledge sources — both document libraries and SharePoint Lists. ... 
+Supports multilingual queries and returns citations with source links. Do not 
+answer from general knowledge when SharePoint content is expected to contain 
+the answer — always retrieve first.
+```
+Source: `sharepoint-intelligent-search-dig-kan-agent-skill.md` (frontmatter)
+
+Alat: knowledge source `KANALI` (SharePoint sajt `.../sites/DocsHub`, biblioteka `KANALI`); liste se upituju kroz isti knowledge source.
+
+## Projekti i tipovi sadržaja
+
+Projekti (root folderi): digitalni onboarding, korporativni projekti, self-care, portal i mobilna aplikacija, SMS/USSD kampanje, media produkcija i drugi interni projekti. Tipovi sadržaja obuhvataju: `architecture`, `server_list`, `procedure`, `incident`, `access_list`, `security`, `roadmap`, `ownership`, `list_item`, `general`.
+
+Source: `sharepoint-intelligent-search-dig-kan-agent-skill.md` (Step 1)
+
+<Warning>
+„Tehnička lica" je dvosmisleno: ako se pita ko je *odgovoran za* dokument/projekat → `ownership`; ako se traže *tehnički nalozi sa pristupom* → `access_list`. Kad je nejasno, pretražuju se oba i vraćaju pod obe klasifikacije.
+
+Source: `sharepoint-intelligent-search-dig-kan-agent-skill.md` (Step 1b)
+</Warning>
+
+## Query strategije
+
+Skill bira jednu od tri strategije: **Targeted** (kad su i projekat i tip razrešeni), **List-filter** (kad je cilj SharePoint lista, npr. „Status = Open AND Category = Infrastructure"), i **Semantic fan-out** (kad projekat/tip nisu razrešeni — 2–4 varijante upita za bolji recall). Nikad se ne prosleđuje sirov `original_query`.
+
+Source: `sharepoint-intelligent-search-dig-kan-agent-skill.md` (Step 2)
+
+## Fallback + fan-out + budget
+```
+Fallback chain (targeted strategy):
+
+Primary query
+Drop project name, keep signal + core_entity
+Drop signal, keep project + core_entity
+Core entity only
+If entity was document-type-only: repeat chain for each project
+```
+Source: `sharepoint-intelligent-search-dig-kan-agent-skill.md` (Step 3)
+
+Search budget je 15 poziva po zahtevu; tehnički otkaz se razlikuje od „nije nađeno" (retry jednom, pa prijava).
+
+## SharePoint Lists
+
+Kada je cilj lista, filter se formuliše kao izraz gde je moguće; ako kolonsko filtriranje nije podržano, prelazi se na široko dohvatanje pa tekstualno filtriranje. Za svaku stavku vraćaju se: naziv liste, sajt, sve relevantne kolone (verbatim), URL stavke i datum izmene.
+
+Source: `sharepoint-intelligent-search-dig-kan-agent-skill.md` (Step 2, Step 5)
+
+<Note>
+**v3.0.0** je konsolidovao stariji skill `digitalni-kanali-document-search` (mapiranje projekata/tipova, targeted upiti, fallback, signali) u jedan skill, uz podršku za SharePoint liste i hand-back arhitekturu. Stari skill treba deaktivirati da se izbegne dvostruko rutiranje. Vidi [Changelog](/reference/changelog).
+
+Source: `sharepoint-intelligent-search-dig-kan-agent-skill.md` (v3.0.0 napomena)
+</Note>
+
+Ovaj skill koristi [Digitalni Kanali Document Assistant](/agents/digitalni-kanali).

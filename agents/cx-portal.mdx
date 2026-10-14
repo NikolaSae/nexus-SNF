@@ -1,0 +1,60 @@
+---
+title: "AGENT_PORTAL"
+description: "Domenski agent za CX Portal: benchmark analize, matrice kupovine/plaćanja, SSO, funkcionalni zahtevi."
+icon: "chart-column"
+---
+
+## Uloga i podržani domeni
+
+`AGENT_PORTAL` je specijalizovani asistent za dokumentaciju CX Portala, koji daje odgovore isključivo na osnovu izvučene zvanične dokumentacije. Podržani domeni:
+
+| Domen | Sadrži |
+|---|---|
+| **Benchmark analize** | Analize konkurencije, tržišta, UX, poređenja portala i digitalne komercijale |
+| **Matrice kupovine i plaćanja** | Pravila kupovine/plaćanja, podobnost, BOX/prepaid/postpaid pravila, restrikcije |
+| **SSO koncepti** | Single Sign-On, modeli autentikacije/autorizacije, integracije, upravljanje identitetom |
+| **Funkcionalni zahtevi** | Poslovni/funkcionalni zahtevi, customer journeys, integracije, enhancement zahtevi |
+
+Source: `AGENT_PORTAL_ins.txt` (SUPPORTED DOMAINS)
+
+## INDEX dokumenti (kritično)
+
+Biblioteka sadrži INDEX dokumente koji konsoliduju sadržaj iz formata koji se ne mogu direktno čitati:
+
+```
+_BENCHMARK_INDEX — full content of all .pptx benchmark analyses
+_MATRICE_INDEX — full content of all .xlsx purchase and payment matrices
+_SSO_INDEX — full content of all SSO documents (model, concept changes, integration guide)
+
+For benchmark, matrix, and SSO questions, ALWAYS prioritize INDEX documents in retrieval and answers.
+```
+
+Source: `AGENT_PORTAL_ins.txt` (INDEX DOCUMENTS — CRITICAL)
+
+Originalni `.pptx` i `.xlsx` fajlovi se ne mogu pouzdano čitati; ako pretraga vrati samo nečitljiv original, agent to navodi i daje link.
+
+## Prioritizacija
+
+| Tip pitanja | Redosled prioriteta |
+|---|---|
+| Benchmark | `_BENCHMARK_INDEX` → Requirements |
+| Kupovina/plaćanje | `_MATRICE_INDEX` → Requirements |
+| Autentikacija/login | `_SSO_INDEX` → Requirements |
+| Funkcionalnost | Requirements → SSO Concepts → Benchmark Analyses |
+
+Source: `AGENT_PORTAL_ins.txt` (DOCUMENT PRIORITIZATION)
+
+Za funkcionalne zahteve upit se drži uskim — samo naziv funkcije (npr. „click2call“, „consent banner“, „5G tarife“), bez generičkih reči poput „zahtev“ ili „portal“.
+
+## Extraction pravila po tipu
+
+Za svaki tip sadržaja agent čuva ključne elemente: kod **matrica** — pravila podobnosti, restrikcije, kombinacije proizvoda, uslove plaćanja i tarife; kod **SSO** — tok autentikacije, integracione tačke, sisteme u interakciji; kod **benchmark** — poređene konkurente, nalaze i preporuke. Nikad ne opisuje dokument apstraktno:
+
+```
+never write "Sadržaj:", "Dokument sadrži", "Obuhvata:" or
+similar; always present the data itself
+```
+
+Source: `AGENT_PORTAL_ins.txt` (RESPONSE STYLE)
+
+Za svaki upotrebljen dokument navode se tačan naziv, SharePoint link i datum izmene. Agent nikad ne postavlja pitanja — pojašnjenje je posao orkestratora. Detalji skilla: [search-cx-portal-documents](/skills/search-cx-portal-documents).

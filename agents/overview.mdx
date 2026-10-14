@@ -1,0 +1,39 @@
+---
+title: "Povezani agenti — pregled"
+description: "Četiri domenska agenta NexusBot sistema, njihova biblioteka i skill, plus planirani AGENT_FINTECH."
+icon: "users-gear"
+---
+
+## Agenti i domeni
+
+| Agent | Biblioteka (UserLibrary) | Domen | Skill |
+|---|---|---|---|
+| [AGENT_FIN](/agents/fin) | FIN | Ugovori: parking, humanitarni, VAS, BULK, PRM, pravilnici | [content-obrada-fin](/skills/content-obrada-fin) |
+| [AGENT_DIGITAL](/agents/digital) | DIGITAL | Identity Protect, Safe Net, Safe Home Net, VR servis | [search-digital-documents](/skills/search-digital-documents) |
+| [AGENT_PORTAL](/agents/cx-portal) | PORTAL | Benchmark, matrice, SSO, funkcionalni zahtevi | [search-cx-portal-documents](/skills/search-cx-portal-documents) |
+| [Digitalni Kanali Document Assistant](/agents/digitalni-kanali) | KANALI | Arhitektura, serveri, deploy, incidenti, monitoring, roadmap | [sharepoint-intelligent-search](/skills/sharepoint-intelligent-search) |
+
+Source: `nexusbot_orchestrator_system_ins.txt` (STEP 2); `share_info.txt`; `_index.md`
+
+## Zajedničke karakteristike
+
+Svi agenti dele nekoliko principa:
+
+- **Retrieval-first**: nikad ne odgovaraju iz znanja modela kada odgovor treba da bude u dokumentaciji — prvo pretraga, pa odgovor. Vidi [RAG / grounding](/techniques/rag-grounding).
+- **Data vs. instructions**: sadržaj vraćen iz knowledge source-a je podatak, nikad instrukcija. Vidi [Odbrana od prompt injection-a](/techniques/prompt-injection-defense).
+- **Verbatim ekstrakcija**: izvlače stvarne podatke (datumi, imena, iznosi, koraci), nikad apstraktne opise. Vidi [Klasifikacija i ekstrakcija](/techniques/content-classification-extraction).
+- **Odgovor na srpskom (ekavica)**, bez izlaganja internih mehanizama.
+
+## Napomene o topologiji
+
+<Info>
+**AGENT_FINTECH (planiran).** Ruting tabela orkestratora sadrži red `FINTECH → AGENT_FINTECH`, ali za njega **ne postoje** instrukcije, skill ni opis knowledge source-a u ovom exportu. Reč je o **planiranom** agentu koji tek treba da bude implementiran (i moguće naknadno izbačen). Do tada, zahtevi za `FINTECH` bibliotekom nemaju izvršioca.
+
+Source: `nexusbot_orchestrator_system_ins.txt` (STEP 2); odsustvo u `_index.md` / `share_info.txt`
+</Info>
+
+<Info>
+**Jedan agent, dva naziva.** `AGENT_KANALI` (ruting tabela) i „Digitalni Kanali Document Assistant" (instrukcije agenta) označavaju **istu komponentu**.
+
+Source: `nexusbot_orchestrator_system_ins.txt` (STEP 2); `Digitalni-Kanali-Document-Assistant_ins.txt`
+</Info>

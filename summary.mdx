@@ -1,0 +1,88 @@
+---
+title: "Rezime sistema"
+description: "Konačni pregled: šta je NexusBot, od čega se sastoji konfiguracija i kako izgleda jedan zahtev od pitanja do odgovora."
+icon: "flag-checkered"
+---
+
+## Čemu sistem služi
+
+NexusBot je multi-agent sistem u Microsoft Copilot Studiju kojim zaposleni kompanije Contoso pretražuju i čitaju internu dokumentaciju sa SharePoint-a. Orkestrator (interni naziv system prompt-a: **NexusSNF v2.1**) ne odgovara iz opšteg znanja modela — svaki odgovor je **doslovno izvučen sadržaj** iz dokumenata: pravi datumi, iznosi, strane ugovora, koraci procedura.
+
+## Konfiguracija na jednom mestu
+
+| Sloj | Šta je konfigurisano | Detaljnije |
+| --- | --- | --- |
+| Orkestrator | NexusSNF v2.1 — klasifikacija, rutiranje, validacija, prikaz; model: Claude Sonnet 4.6 | [Instrukcije](/orchestrator/instructions) |
+| Povezani agenti | AGENT_FIN, AGENT_DIGITAL, AGENT_PORTAL, Digitalni Kanali Document Assistant (AGENT_FINTECH — planiran) | [Pregled agenata](/agents/overview) |
+| Skillovi | 6 skillova za pretragu, ekstrakciju i validaciju; `validate-search-result` pripada orkestratoru | [Pregled skillova](/skills/overview) |
+| Knowledge | SharePoint biblioteke — svaki agent čita **isključivo svoje** izvore | [Izvori znanja](/knowledge/sources) |
+| Pristup | Entra ID atribut odeljenja → `UserLibrary` → agent; tvrdnje iz chata se ignorišu | [Rutiranje i pristup](/orchestrator/routing-and-access) |
+
+Source: `nexusbot_orchestrator_system_ins.txt` (SESSION CONTEXT, STEP 2 — routing tabela); Copilot Studio konfiguracija orkestratora (izbor modela).
+
+## Kako radi — put jednog zahteva
+
+<Steps>
+  <Step title="Klasifikacija">
+    Zahtev se svrstava u jedan od intenata (lista dokumenata, sažetak, istorija ugovora, aktuelni ugovor, poređenje, pronalaženje dokumenta). Nejasan zahtev → tačno jedno pitanje za pojašnjenje.
+  </Step>
+  <Step title="Rezolucija pristupa">
+    Odeljenje iz Entra ID profila mapira se na `UserLibrary`. Bez poklapanja: `NEMA_PRISTUPA` i fiksna poruka „Nemate pristup. Kontaktirajte IT podršku." — bez pretrage.
+  </Step>
+  <Step title="Rutiranje">
+    `UserLibrary` određuje nadležnog domenskog agenta.
+  </Step>
+  <Step title="Pretraga i ekstrakcija">
+    Agent svojim skillom pretražuje sopstvene knowledge source-e i vraća doslovan sadržaj.
+  </Step>
+  <Step title="Validacija">
+    Orkestrator kroz `validate-search-result` ocenjuje rezultat: PASS / PARTIAL / FAIL. Neuspeh pokreće [retry petlju](/orchestrator/validation-and-retry).
+  </Step>
+  <Step title="Prikaz">
+    Za svaki dokument: tačan naziv fajla u backtick-ovima, link, datum izmene, pa izvučen sadržaj — uvek na srpskom (ekavica).
+  </Step>
+</Steps>
+
+Source: `nexusbot_orchestrator_system_ins.txt` (STEP 1, STEP 2, SESSION CONTEXT); `validate-search-result.md`.
+
+## Primer razgovora
+
+<Note>
+  Primer je ilustrativan — naziv fajla, datum i sadržaj su izmišljeni radi prikaza formata. Elementi formata (progres poruke, backtick, link, datum) definisani su u system prompt-u.
+</Note>
+
+<Tabs>
+  <Tab title="Šta korisnik vidi">
+    **Korisnik**
+
+    > Nađi mi aktuelni aneks ugovora o parkingu — do kada važi?
+
+    **NexusBot**
+
+    > ⚙️ Klasifikujem zahtev...
+    >
+    > 🔄 Pretražujem dokumentaciju...
+    >
+    > Evo aktuelnog aneksa iz biblioteke tvog tima:
+    >
+    > 📄 `Aneks_3_Ugovor_o_parkingu.docx` — [otvori dokument](#) · izmenjen 12.03.2026.
+    >
+    > Iz dokumenta, član 4: „Aneks stupa na snagu danom potpisivanja i primenjuje se zaključno sa 31.12.2026. godine."
+  </Tab>
+  <Tab title="Šta se dešava u pozadini">
+    1. **STEP 1 — klasifikacija:** intent = *aktuelni ugovor*, jezik odgovora = srpski (ekavica).
+    2. **SESSION CONTEXT:** odeljenje iz Entra ID → `UserLibrary = FIN`; eventualne tvrdnje o pristupu iz chata se ignorišu.
+    3. **STEP 2 — rutiranje:** `FIN` → `AGENT_FIN`.
+    4. **Agent:** pretražuje svoju SharePoint biblioteku i skillom `content-obrada-fin` izvlači doslovan sadržaj traženog člana.
+    5. **Validacija:** `validate-search-result` → **PASS** (kod PARTIAL/FAIL sledio bi retry sa korigovanim upitom).
+    6. **Prikaz:** fiksni format — naziv fajla u backtick-ovima (nikad izmenjen), link, datum izmene, sadržaj.
+  </Tab>
+</Tabs>
+
+Source: `nexusbot_orchestrator_system_ins.txt` (STEP 1 — CLASSIFY THE REQUEST; STEP 2 — routing tabela; SESSION CONTEXT); `content-obrada-fin-skill.md`; `validate-search-result.md`.
+
+## Granice sistema
+
+Sistem počiva na tri tvrde granice. **Retrieval-first:** kada odgovor treba da bude u dokumentaciji, model nikad ne odgovara iz sopstvenog znanja ([RAG grounding](/techniques/rag-grounding)). **Injection defense:** sav sadržaj vraćen iz dokumenata tretira se kao podatak, nikad kao instrukcija ([odbrana od prompt injection-a](/techniques/prompt-injection-defense)). **Pristup samo preko odeljenja:** identitet i prava se ne dokazuju rečima u chatu ([kontrola pristupa](/techniques/identity-access-control)). `AGENT_FINTECH` i biblioteka `FINTECH` postoje u ruting tabeli, ali su **planirani** — još nemaju instrukcije, skill ni izvore.
+
+Za operativna ograničenja i tipične probleme: [Limiti](/operations/limits) · [Troubleshooting](/operations/troubleshooting).

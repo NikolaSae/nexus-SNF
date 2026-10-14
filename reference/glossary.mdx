@@ -1,0 +1,57 @@
+---
+title: "Rečnik pojmova"
+description: "Ključni termini korišćeni kroz NexusBot dokumentaciju."
+icon: "book"
+---
+
+## Pojmovi
+
+<AccordionGroup>
+  <Accordion title="NexusBot / NexusSNF">
+    Proizvodni naziv sistema je **NexusBot**. `NexusSNF` je interni naziv orkestratorovog system prompt-a (`NexusSNF — Orchestrator System Prompt v2.1`). Označavaju isti sistem.
+  </Accordion>
+  <Accordion title="Orkestrator">
+    Centralni agent koji klasifikuje zahtev, rutira ga, poziva validaciju, odlučuje o retry-ju i komponuje finalni odgovor. Ne pretražuje sam.
+  </Accordion>
+  <Accordion title="Povezani agent (connected agent)">
+    Domenski specijalista kome orkestrator delegira zahtev (`AGENT_FIN`, `AGENT_DIGITAL`, `AGENT_PORTAL`, Digitalni Kanali Document Assistant). Vraća činjenice, ne razgovara sa korisnikom.
+  </Accordion>
+  <Accordion title="Skill">
+    Alat koji izvršava konkretan zadatak (pretraga, ekstrakcija, validacija). NexusBot ima 6 skillova.
+  </Accordion>
+  <Accordion title="Knowledge source">
+    SharePoint biblioteka iz koje se čita sadržaj. Jedini mehanizam dohvatanja — nema „Get files" alata.
+  </Accordion>
+  <Accordion title="UserLibrary">
+    Biblioteka izvedena iz `department` atributa korisnika u Entra ID-u; određuje kom agentu se rutira. Vrednost `NEMA_PRISTUPA` blokira pretragu.
+  </Accordion>
+  <Accordion title="Intent">
+    Klasifikacija zahteva: `folder_list`, `document_summary`, `contract_history`, `contract_current`, `contract_compare`, `document_find`.
+  </Accordion>
+  <Accordion title="ENTITY">
+    Predmet pretrage izvučen iz zahteva: klijent, organizacija, projekat, naziv dokumenta ili tema.
+  </Accordion>
+  <Accordion title="PASS / PARTIAL / FAIL">
+    Verdikti skilla `validate-search-result` o kvalitetu rezultata pretrage.
+  </Accordion>
+  <Accordion title="FALLBACK">
+    Oznaka za sadržaj koji se ne može pouzdano pročitati; prikazuje se fiksnom porukom „Dokument nije čitljiv automatski."
+  </Accordion>
+  <Accordion title="Fallback lanac / fan-out">
+    Niz sve širih upita (fallback) ili više paralelnih varijanti (fan-out) kada primarni upit ne vrati koristan rezultat.
+  </Accordion>
+  <Accordion title="INDEX dokument">
+    Konsolidovani dokument (`_BENCHMARK_INDEX`, `_MATRICE_INDEX`, `_SSO_INDEX`) koji sadrži sadržaj nečitljivih `.pptx`/`.xlsx` fajlova; ima prioritet u CX Portal pretrazi.
+  </Accordion>
+  <Accordion title="Data vs. instructions">
+    Princip da je sav vraćeni sadržaj podatak, nikad instrukcija — osnova odbrane od prompt injection-a.
+  </Accordion>
+  <Accordion title="Search budget">
+    Gornja granica poziva ka knowledge source-u po zahtevu (15).
+  </Accordion>
+  <Accordion title="Sensitivity label (Purview)">
+    Microsoft Purview oznaka poverljivosti (npr. `[Confidential]`) koja se surfaceuje uz izvučene podatke, nikad ne potiskuje.
+  </Accordion>
+</AccordionGroup>
+
+Termini se dosledno koriste kroz celu dokumentaciju; za arhitektonski kontekst vidi [Arhitektura — pregled](/architecture/overview).
