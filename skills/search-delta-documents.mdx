@@ -1,24 +1,24 @@
 ---
-title: "search-cx-portal-documents"
-description: "Skill agenta AGENT_PORTAL za pretragu i ekstrakciju CX Portal dokumentacije."
+title: "search-delta-documents"
+description: "Skill agenta AGENT_DELTA za pretragu i ekstrakciju Delta dokumentacije."
 icon: "magnifying-glass-chart"
 ---
 
 ## Namena
 
-`search-cx-portal-documents` dohvata relevantnu dokumentaciju iz CX Portal knowledge source-a i vraća činjeničan sadržaj pozivajućem agentu — zadužen je za retrieval i ekstrakciju, ne za odgovaranje korisniku:
+`search-delta-documents` dohvata relevantnu dokumentaciju iz Delta knowledge source-a i vraća činjeničan sadržaj pozivajućem agentu — zadužen je za retrieval i ekstrakciju, ne za odgovaranje korisniku:
 ```
-Retrieve relevant documentation from the CX Portal knowledge sources 
+Retrieve relevant documentation from the Delta knowledge sources 
 and return factual content for the calling agent. This skill is 
 responsible for retrieval and document extraction. Do not act as a chatbot.
 ```
-Source: `search-cx-portal-documents-skill.md` (Purpose)
+Source: `search-delta-documents-skill.md` (Purpose)
 
 ## Domeni
 
 Benchmark analize, Matrice kupovine i plaćanja, SSO koncepti, Funkcionalni zahtevi — svaki sa tipičnim temama (npr. za funkcionalne zahteve: click2call, deeplinking, consent management, Bloomberg/Deezer integracije, payment cards, 5G tarife).
 
-Source: `search-cx-portal-documents-skill.md` (Supported Domains)
+Source: `search-delta-documents-skill.md` (Supported Domains)
 
 ## INDEX pravila
 
@@ -31,7 +31,7 @@ _BENCHMARK_INDEX
 _MATRICE_INDEX
 _SSO_INDEX
 ```
-Source: `search-cx-portal-documents-skill.md` (INDEX DOCUMENT RULES)
+Source: `search-delta-documents-skill.md` (INDEX DOCUMENT RULES)
 
 Originalni `.pptx`/`.xlsx` fajlovi nisu pouzdano čitljivi; ako pretraga vrati samo fragmente (HTML tagovi, polomljene tabele), sadržaj se ne koristi — dokument se označava kao nečitljiv, vraćaju se samo naziv i link.
 
@@ -44,7 +44,7 @@ the specific feature name only (e.g. "click2call", "consent banner", "5G tarife"
 without generic words like "zahtev" or "portal". Generic terms pull 
 irrelevant documents.
 ```
-Source: `search-cx-portal-documents-skill.md` (RETRIEVAL STRATEGY)
+Source: `search-delta-documents-skill.md` (RETRIEVAL STRATEGY)
 
 Vraća se do 5 relevantnih dokumenata; prednost imaju tačna poklapanja, najnovije i odobrene/finalne verzije.
 
@@ -54,6 +54,6 @@ Skill čuva poslovna pravila, uslove podobnosti/plaćanja, zahteve, kriterijume 
 
 Za svaki dokument vraća: tačan naziv (nikad izmenjen), pun SharePoint link, tip, verziju, datum, razlog relevantnosti i izvučen sadržaj.
 
-Source: `search-cx-portal-documents-skill.md` (EXTRACTION RULES; OUTPUT REQUIREMENTS)
+Source: `search-delta-documents-skill.md` (EXTRACTION RULES; OUTPUT REQUIREMENTS)
 
-Ovaj skill koristi agent [AGENT_PORTAL](/agents/cx-portal).
+Ovaj skill koristi agent [AGENT_DELTA](/agents/delta).

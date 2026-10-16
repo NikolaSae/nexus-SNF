@@ -10,66 +10,66 @@ Svi povezani agenti čitaju sadržaj iz SharePoint biblioteka na sajtu `https://
 
 ## Biblioteke
 
-### FIN
+### ALFA
 
 ```
-Document retrieval specialist for the FIN division of Contoso.
+Document retrieval specialist for the ALFA division of Contoso.
 Searches and extracts content from contracts, annexes, parking agreements,
 humanitarian organization contracts, VAS/BULK/PRM service agreements, rulebooks,
-forms, and procedures. https://contoso.sharepoint.com/sites/DocsHub/Fin
+forms, and procedures. https://contoso.sharepoint.com/sites/DocsHub/Alfa
 ```
 
-Source: `share_info.txt` (FIN)
+Source: `share_info.txt` (ALFA)
 
-### DIGITAL
-
-```
-Search this source to read document content from the DIGITAL library.
-Contains documentation for digital B2C projects: Identity Protect (Identity Protection, external
-partner), Safe Home Net, Safe Net, and VR servis.
-https://contoso.sharepoint.com/sites/DocsHub/Digital
-```
-
-Source: `share_info.txt` (DIGITAL)
-
-### PORTAL
+### BETA
 
 ```
-Search this source to read document content from the PORTAL library.
+Search this source to read document content from the BETA library.
+Contains documentation for digital B2C projects: Orion (external
+partner), Vega Home, Vega, and VR servis.
+https://contoso.sharepoint.com/sites/DocsHub/Beta
+```
+
+Source: `share_info.txt` (BETA)
+
+### DELTA
+
+```
+Search this source to read document content from the DELTA library.
 Contains benchmark analyses, purchase and payment matrices, SSO concept documents,
-and functional requirements for the CX portal.
-https://contoso.sharepoint.com/sites/DocsHub/Portal
+and functional requirements for the Delta portal.
+https://contoso.sharepoint.com/sites/DocsHub/Delta
 ```
 
-Source: `share_info.txt` (PORTAL)
+Source: `share_info.txt` (DELTA)
 
-### KANALI
+### EPSILON
 
 ```
 Search this source to read the full content of technical documents from the
-Digitalni kanali division. ... Contains architecture documents, [redigovano],
+Epsilon division. ... Contains architecture documents, [redigovano],
 deploy procedures, incident management processes, monitoring tools,
 [redigovano], and roadmaps ...
-https://contoso.sharepoint.com/sites/DocsHub/Kanali
+https://contoso.sharepoint.com/sites/DocsHub/Epsilon
 ```
 
-Source: `share_info.txt` (KANALI)
+Source: `share_info.txt` (EPSILON)
 
 ## Mapiranje biblioteka ↔ agent
 
 | Biblioteka | Agent |
 |---|---|
-| `FIN` | [AGENT_FIN](/agents/fin) |
-| `DIGITAL` | [AGENT_DIGITAL](/agents/digital) |
-| `PORTAL` | [AGENT_PORTAL](/agents/cx-portal) |
-| `KANALI` | [Digitalni Kanali Document Assistant](/agents/digitalni-kanali) |
+| `ALFA` | [AGENT_ALFA](/agents/alfa) |
+| `BETA` | [AGENT_BETA](/agents/beta) |
+| `DELTA` | [AGENT_DELTA](/agents/delta) |
+| `EPSILON` | [Epsilon Document Assistant](/agents/epsilon) |
 
 Source: `share_info.txt`; `nexusbot_orchestrator_system_ins.txt` (STEP 2)
 
 <Info>
-**FINTECH biblioteka (planirana).** Ruting tabela orkestratora sadrži `UserLibrary = FINTECH`, ali `share_info.txt` opisuje **4 od 5** biblioteka — FINTECH nema opis ni URL. Reč je o **planiranom** knowledge source-u, uz planirani [AGENT_FINTECH](/agents/overview); do implementacije, FINTECH nema pridružen izvor.
+**GAMA biblioteka (planirana).** Ruting tabela orkestratora sadrži `UserLibrary = GAMA`, ali `share_info.txt` opisuje **4 od 5** biblioteka — GAMA nema opis ni URL. Reč je o **planiranom** knowledge source-u, uz planirani [AGENT_GAMA](/agents/overview); do implementacije, GAMA nema pridružen izvor.
 
-Source: `share_info.txt` (odsustvo FINTECH-a); `nexusbot_orchestrator_system_ins.txt` (STEP 2)
+Source: `share_info.txt` (odsustvo GAMA-a); `nexusbot_orchestrator_system_ins.txt` (STEP 2)
 </Info>
 
 ## Vezano

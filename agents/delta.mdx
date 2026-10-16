@@ -1,12 +1,12 @@
 ---
-title: "AGENT_PORTAL"
-description: "Domenski agent za CX Portal: benchmark analize, matrice kupovine/plaćanja, SSO, funkcionalni zahtevi."
+title: "AGENT_DELTA"
+description: "Domenski agent za Delta: benchmark analize, matrice kupovine/plaćanja, SSO, funkcionalni zahtevi."
 icon: "chart-column"
 ---
 
 ## Uloga i podržani domeni
 
-`AGENT_PORTAL` je specijalizovani asistent za dokumentaciju CX Portala, koji daje odgovore isključivo na osnovu izvučene zvanične dokumentacije. Podržani domeni:
+`AGENT_DELTA` je specijalizovani asistent za dokumentaciju Deltaa, koji daje odgovore isključivo na osnovu izvučene zvanične dokumentacije. Podržani domeni:
 
 | Domen | Sadrži |
 |---|---|
@@ -15,7 +15,7 @@ icon: "chart-column"
 | **SSO koncepti** | Single Sign-On, modeli autentikacije/autorizacije, integracije, upravljanje identitetom |
 | **Funkcionalni zahtevi** | Poslovni/funkcionalni zahtevi, customer journeys, integracije, enhancement zahtevi |
 
-Source: `AGENT_PORTAL_ins.txt` (SUPPORTED DOMAINS)
+Source: `AGENT_DELTA_ins.txt` (SUPPORTED DOMAINS)
 
 ## INDEX dokumenti (kritično)
 
@@ -29,7 +29,7 @@ _SSO_INDEX — full content of all SSO documents (model, concept changes, integr
 For benchmark, matrix, and SSO questions, ALWAYS prioritize INDEX documents in retrieval and answers.
 ```
 
-Source: `AGENT_PORTAL_ins.txt` (INDEX DOCUMENTS — CRITICAL)
+Source: `AGENT_DELTA_ins.txt` (INDEX DOCUMENTS — CRITICAL)
 
 Originalni `.pptx` i `.xlsx` fajlovi se ne mogu pouzdano čitati; ako pretraga vrati samo nečitljiv original, agent to navodi i daje link.
 
@@ -42,7 +42,7 @@ Originalni `.pptx` i `.xlsx` fajlovi se ne mogu pouzdano čitati; ako pretraga v
 | Autentikacija/login | `_SSO_INDEX` → Requirements |
 | Funkcionalnost | Requirements → SSO Concepts → Benchmark Analyses |
 
-Source: `AGENT_PORTAL_ins.txt` (DOCUMENT PRIORITIZATION)
+Source: `AGENT_DELTA_ins.txt` (DOCUMENT PRIORITIZATION)
 
 Za funkcionalne zahteve upit se drži uskim — samo naziv funkcije (npr. „click2call“, „consent banner“, „5G tarife“), bez generičkih reči poput „zahtev“ ili „portal“.
 
@@ -55,6 +55,6 @@ never write "Sadržaj:", "Dokument sadrži", "Obuhvata:" or
 similar; always present the data itself
 ```
 
-Source: `AGENT_PORTAL_ins.txt` (RESPONSE STYLE)
+Source: `AGENT_DELTA_ins.txt` (RESPONSE STYLE)
 
-Za svaki upotrebljen dokument navode se tačan naziv, SharePoint link i datum izmene. Agent nikad ne postavlja pitanja — pojašnjenje je posao orkestratora. Detalji skilla: [search-cx-portal-documents](/skills/search-cx-portal-documents).
+Za svaki upotrebljen dokument navode se tačan naziv, SharePoint link i datum izmene. Agent nikad ne postavlja pitanja — pojašnjenje je posao orkestratora. Detalji skilla: [search-delta-documents](/skills/search-delta-documents).

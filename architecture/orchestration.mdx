@@ -27,11 +27,11 @@ Rutiranje ima dva mapiranja. Prvo, odeljenje iz Entra ID-a → biblioteka:
 
 | Department (Entra ID / email domen) | UserLibrary |
 |---|---|
-| Odeljenje za finansijske servise | `FIN` |
-| Odeljenje za digitalne servise | `DIGITAL` |
-| Odeljenje za fintech | `FINTECH` |
-| Odeljenje za korisnički portal | `PORTAL` |
-| Odeljenje za digitalne kanale | `KANALI` |
+| Odeljenje Alfa | `ALFA` |
+| Odeljenje Beta | `BETA` |
+| Odeljenje Gama | `GAMA` |
+| Odeljenje Delta | `DELTA` |
+| Odeljenje Epsilon | `EPSILON` |
 
 Source: `nexusbot_orchestrator_system_ins.txt` (SESSION CONTEXT)
 
@@ -39,16 +39,16 @@ Drugo, biblioteka → povezani agent i domen:
 
 | UserLibrary | Connected agent | Domen |
 |---|---|---|
-| `FIN` | AGENT_FIN | ugovori, parking, humanitarni, VAS, BULK, PRM |
-| `DIGITAL` | AGENT_DIGITAL | digitalni B2C projekti (Identity Protect, Safe Net…) |
-| `FINTECH` | AGENT_FINTECH | fintech dokumentacija |
-| `PORTAL` | AGENT_PORTAL | benchmark, matrice, SSO, funkcionalni zahtevi |
-| `KANALI` | AGENT_KANALI | arhitektura, serveri, deploy, monitoring… |
+| `ALFA` | AGENT_ALFA | ugovori, parking, humanitarni, VAS, BULK, PRM |
+| `BETA` | AGENT_BETA | digitalni B2C projekti (Orion, Vega…) |
+| `GAMA` | AGENT_GAMA | dokumentacija odeljenja Gama |
+| `DELTA` | AGENT_DELTA | benchmark, matrice, SSO, funkcionalni zahtevi |
+| `EPSILON` | AGENT_EPSILON | arhitektura, serveri, deploy, monitoring… |
 
 Source: `nexusbot_orchestrator_system_ins.txt` (STEP 2 — Domain-to-agent mapping)
 
 <Note>
-`AGENT_KANALI` u ruting tabeli i „Digitalni Kanali Document Assistant“ u instrukcijama su **isti agent** (dva naziva za jednu komponentu). `AGENT_FINTECH` / `FINTECH` su **planirani** i još nisu implementirani. Detalji pristupa: [Rutiranje i kontrola pristupa](/orchestrator/routing-and-access).
+`AGENT_EPSILON` u ruting tabeli i „Epsilon Document Assistant“ u instrukcijama su **isti agent** (dva naziva za jednu komponentu). `AGENT_GAMA` / `GAMA` su **planirani** i još nisu implementirani. Detalji pristupa: [Rutiranje i kontrola pristupa](/orchestrator/routing-and-access).
 </Note>
 
 ## Scope check

@@ -1,43 +1,43 @@
 ---
-title: "search-digital-documents"
-description: "Skill agenta AGENT_DIGITAL za pretragu i ekstrakciju Digital dokumentacije."
+title: "search-beta-documents"
+description: "Skill agenta AGENT_BETA za pretragu i ekstrakciju Beta dokumentacije."
 icon: "magnifying-glass"
 ---
 
 ## Namena
 
-`search-digital-documents` dohvata relevantnu dokumentaciju iz knowledge source-a `DIGITAL` i vraća činjeničan, strukturiran sadržaj pozivajućem agentu — ne ponaša se kao chatbot i ne daje finalne odgovore:
+`search-beta-documents` dohvata relevantnu dokumentaciju iz knowledge source-a `BETA` i vraća činjeničan, strukturiran sadržaj pozivajućem agentu — ne ponaša se kao chatbot i ne daje finalne odgovore:
 
 ```
-Retrieve relevant documentation from the DIGITAL knowledge
+Retrieve relevant documentation from the BETA knowledge
 source and return factual, structured content for the calling agent.
 Do not act as a chatbot. Do not provide final user-facing answers.
 ```
 
-Source: `search-digital-documents-skill.md` (Purpose)
+Source: `search-beta-documents-skill.md` (Purpose)
 
 ## Projekti i ključne reči
 
 | Projekat | Ključne reči |
 |---|---|
-| Identity Protect | identity protect, identity protection, identitet, digitalni identitet, dark web |
-| Safe Home Net | safe home net, kućni net, kućni internet, home internet protection |
-| Safe Net | safe net, mobilna zaštita, mobile protection, bezbedan internet |
+| Orion | orion, identitet, digitalni identitet, dark web |
+| Vega Home | vega home, kućni net, kućni internet, home internet protection |
+| Vega | vega, mobilna zaštita, mobile protection, bezbedan internet |
 | VR servis | vr servis, vr, virtual reality, virtuelna realnost |
 
-Source: `search-digital-documents-skill.md` (Supported Projects)
+Source: `search-beta-documents-skill.md` (Supported Projects)
 
 <Warning>
-Termini poput „net“ ili „safe“ sami po sebi mogu odgovarati na više projekata (Safe Home Net vs. Safe Net). Kada je namera nejasna, dohvataju se kandidati iz svih odgovarajućih projekata i označavaju po projektu.
+Termin poput „vega“ sam po sebi može odgovarati na više projekata (Vega Home vs. Vega). Kada je namera nejasna, dohvataju se kandidati iz svih odgovarajućih projekata i označavaju po projektu.
 
-Source: `search-digital-documents-skill.md` (Ambiguous keyword handling)
+Source: `search-beta-documents-skill.md` (Ambiguous keyword handling)
 </Warning>
 
 ## Tipovi dokumenata
 
 Service Scenario, User Instructions, Presentation, Contract, Business Decision — svaki sa svojim fokusom (opis servisa, uputstva, prezentacije, ugovorni uslovi, upravljačke odluke).
 
-Source: `search-digital-documents-skill.md` (Supported Document Types)
+Source: `search-beta-documents-skill.md` (Supported Document Types)
 
 ## Prioritizacija po intentu
 
@@ -49,7 +49,7 @@ Document type priority (per intent, see below)
 Newest date within same priority level
 ```
 
-Source: `search-digital-documents-skill.md` (Retrieval Strategy)
+Source: `search-beta-documents-skill.md` (Retrieval Strategy)
 
 Ako nema relevantnih dokumenata, vraća se eksplicitan „no matching documents found“ — nikad se ne podmeću nepovezani dokumenti.
 
@@ -57,6 +57,6 @@ Ako nema relevantnih dokumenata, vraća se eksplicitan „no matching documents 
 
 Izvlače se samo činjenice, u originalnom jeziku izvora, bez prevoda/parafraze; datumi, imena, nazivi proizvoda, obaveze, iznosi, koraci aktivacije i pravila naplate čuvaju se tačno. Za svaki dokument vraćaju se: naziv, tip, projekat, datum, razlog relevantnosti i izvučen sadržaj.
 
-Source: `search-digital-documents-skill.md` (Extraction Rules; Output Requirements)
+Source: `search-beta-documents-skill.md` (Extraction Rules; Output Requirements)
 
-Ovaj skill koristi agent [AGENT_DIGITAL](/agents/digital).
+Ovaj skill koristi agent [AGENT_BETA](/agents/beta).

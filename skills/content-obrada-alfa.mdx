@@ -1,12 +1,12 @@
 ---
-title: "content-obrada-fin (v1.2)"
-description: "Skill agenta AGENT_FIN: konstrukcija upita, fallback lanac, klasifikacija i verbatim ekstrakcija za FIN."
+title: "content-obrada-alfa (v1.2)"
+description: "Skill agenta AGENT_ALFA: konstrukcija upita, fallback lanac, klasifikacija i verbatim ekstrakcija za ALFA."
 icon: "gears"
 ---
 
 ## Namena
 
-`content-obrada-fin` je verzija skilla u vlasništvu **AGENT_FIN**. Dohvata i izvlači stvaran sadržaj iz knowledge source-a `FIN`, gradi optimizovane upite, prolazi fallback lanac i klasifikuje sadržaj:
+`content-obrada-alfa` je verzija skilla u vlasništvu **AGENT_ALFA**. Dohvata i izvlači stvaran sadržaj iz knowledge source-a `ALFA`, gradi optimizovane upite, prolazi fallback lanac i klasifikuje sadržaj:
 
 ```
 Constructs optimized Knowledge source queries from entity and intent,
@@ -15,9 +15,9 @@ returned content by type ... and extracts actual data verbatim — never
 describes documents in the abstract.
 ```
 
-Source: `content-obrada-fin-skill.md` (frontmatter `description`)
+Source: `content-obrada-alfa-skill.md` (frontmatter `description`)
 
-Jedini alat je knowledge source `FIN`. SharePoint sajt: `https://contoso.sharepoint.com/sites/DocsHub`, biblioteka `FIN`.
+Jedini alat je knowledge source `ALFA`. SharePoint sajt: `https://contoso.sharepoint.com/sites/DocsHub`, biblioteka `ALFA`.
 
 <Info>
 Ovo je **verzija agenta**; orkestrator ima svoju: [content-obrada](/skills/content-obrada).
@@ -35,7 +35,7 @@ Ovo je **verzija agenta**; orkestrator ima svoju: [content-obrada](/skills/conte
   <Step title="Step 6 — Hand back">Vraća činjenice orkestratoru; ne komponuje finalni odgovor.</Step>
 </Steps>
 
-Source: `content-obrada-fin-skill.md` (Steps 0–6)
+Source: `content-obrada-alfa-skill.md` (Steps 0–6)
 
 ## Kategorije i signal termini
 
@@ -47,12 +47,12 @@ Source: `content-obrada-fin-skill.md` (Steps 0–6)
 | bulk, sender, masovni, BULK | BULK | bulk sender ugovor cena poruka |
 | PRM, roaming | PRM | PRM roaming provajder ugovor |
 
-Source: `content-obrada-fin-skill.md` (Step 1 — Category mapping)
+Source: `content-obrada-alfa-skill.md` (Step 1 — Category mapping)
 
 <Warning>
 „mCommerce“ je dvosmislen — pokreće i Parking i VAS. Bez grada ili kratkog broja za razrešenje, pretražuju se **obe** kategorije uz ambiguity note, umesto pogađanja.
 
-Source: `content-obrada-fin-skill.md` (Step 1)
+Source: `content-obrada-alfa-skill.md` (Step 1)
 </Warning>
 
 ## Fallback lanac upita
@@ -64,7 +64,7 @@ Category + entity without specifics: "parking ugovor Grad X"
 Broadest: category signal only: "parking ugovor aneks"
 ```
 
-Source: `content-obrada-fin-skill.md` (Step 2e — Fallback query chain)
+Source: `content-obrada-alfa-skill.md` (Step 2e — Fallback query chain)
 
 ## Search budget i provider-switch check
 
@@ -73,7 +73,7 @@ Search budget: cap total Knowledge source calls at 15 per user
 request (across all sub-requests from Step 0).
 ```
 
-Source: `content-obrada-fin-skill.md` (Step 3)
+Source: `content-obrada-alfa-skill.md` (Step 3)
 
 Za `contract_current`, raskid raskida jedan lanac ugovora, ne nužno uslugu grada — pre proglašavanja grada neaktivnim traži se noviji ugovor sa bilo kojim provajderom (po mreži, operater A i operater B nezavisno):
 
@@ -84,7 +84,7 @@ is found may you report the city as inactive — and phrase it as "nije
 pronađen aktivan ugovor u biblioteci"
 ```
 
-Source: `content-obrada-fin-skill.md` (Step 3)
+Source: `content-obrada-alfa-skill.md` (Step 3)
 
 <Note>
 Verzija v1.2 dodala je provider-switch check i zahtev da `contract_compare` prvo razreši aktuelni ugovor svake strane. Vidi [Changelog](/reference/changelog) i tehniku [Konstrukcija upita i fallback lanci](/techniques/query-construction-fallback).

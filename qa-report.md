@@ -31,19 +31,19 @@ Environment Tester: **OFF** (po nalogu korisnika — TEST_REQUESTS i operations/
 | ID | Šta | Rešenje u dokumentaciji |
 |---|---|---|
 | GAP-01 | NexusBot vs NexusSNF | Svuda NexusBot; NexusSNF kao naziv system prompt-a (`index`, `orchestrator/instructions`, `reference/glossary`) |
-| GAP-02 | AGENT_FINTECH | Dokumentovan kao PLANIRAN (`agents/overview`, `operations/troubleshooting`) |
-| GAP-03 | Naziv Digitalni Kanali | „Jedan agent, dva naziva" (`agents/digitalni-kanali`, `agents/overview`) |
-| GAP-04 | content-obrada | Dve zasebne verzije po komponenti (`skills/overview`, `skills/content-obrada`, `skills/content-obrada-fin`) |
+| GAP-02 | AGENT_GAMA | Dokumentovan kao PLANIRAN (`agents/overview`, `operations/troubleshooting`) |
+| GAP-03 | Naziv Epsilon | „Jedan agent, dva naziva" (`agents/epsilon`, `agents/overview`) |
+| GAP-04 | content-obrada | Dve zasebne verzije po komponenti (`skills/overview`, `skills/content-obrada`, `skills/content-obrada-alfa`) |
 | GAP-05 | validate-search-result vlasnik | NexusBot orkestrator (`skills/validate-search-result`) |
 | GAP-06 | Model/kanali/deploy | PLANIRANO / nije definisano (`configuration/environment`) |
-| GAP-07 | FINTECH biblioteka | PLANIRANA (`knowledge/sources`) |
+| GAP-07 | GAMA biblioteka | PLANIRANA (`knowledge/sources`) |
 
 ## Inventar izvora (Phase 1)
 Svih 12/12 fajlova iz `_index.md` pronađeno i pročitano verbatim:
-nexusbot_orchestrator_system_ins.txt · AGENT_DIGITAL_ins.txt · AGENT_FIN_ins.txt ·
-AGENT_PORTAL_ins.txt · Digitalni-Kanali-Document-Assistant_ins.txt ·
-content-obrada-nexus-skill.md · content-obrada-fin-skill.md · search-digital-documents-skill.md ·
-search-cx-portal-documents-skill.md · sharepoint-intelligent-search-dig-kan-agent-skill.md ·
+nexusbot_orchestrator_system_ins.txt · AGENT_BETA_ins.txt · AGENT_ALFA_ins.txt ·
+AGENT_DELTA_ins.txt · Epsilon-Document-Assistant_ins.txt ·
+content-obrada-nexus-skill.md · content-obrada-alfa-skill.md · search-beta-documents-skill.md ·
+search-delta-documents-skill.md · sharepoint-intelligent-search-epsilon-agent-skill.md ·
 validate-search-result.md · share_info.txt
 
 ## Ispravke tokom generisanja

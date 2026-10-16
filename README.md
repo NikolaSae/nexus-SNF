@@ -5,7 +5,7 @@
 NexusBot lets employees ask questions about internal documentation (contracts, procedures, architecture, benchmark analyses) in Serbian and get back **verbatim extracted content** from SharePoint documents: real dates, amounts, contract parties and procedure steps, always with the file name, link and last-modified date. The system never answers from the model's general knowledge.
 
 > [!NOTE]
-> This is a public, redacted version of the documentation. The company name, SharePoint addresses, department and access-group names, partners, project codenames and concrete examples have been replaced with generic values (e.g. `Contoso`, `contoso.sharepoint.com`, `FIN`, `Grad X`). The architecture and logic of the system are unchanged. The detailed pages (`.mdx`) are written in Serbian.
+> This is a public, redacted version of the documentation. The company name, SharePoint addresses, department and access-group names, partners, project codenames and concrete examples have been replaced with generic values (e.g. `Contoso`, `contoso.sharepoint.com`, `ALFA`, `Grad X`). The architecture and logic of the system are unchanged. The detailed pages (`.mdx`) are written in Serbian.
 
 ## Contents
 
@@ -49,7 +49,7 @@ Every request goes through six steps:
 
 *(The user asks for the current annex of the parking contract and its expiry date; the bot returns the file and quotes article 4 verbatim. The example is illustrative: file name, date and content are made up.)*
 
-Behind the scenes: intent = `contract_current` → department from Entra ID → `UserLibrary = FIN` → `AGENT_FIN` → the `content-obrada-fin` skill extracts the requested article → `validate-search-result` returns PASS → output in the fixed format.
+Behind the scenes: intent = `contract_current` → department from Entra ID → `UserLibrary = ALFA` → `AGENT_ALFA` → the `content-obrada-alfa` skill extracts the requested article → `validate-search-result` returns PASS → output in the fixed format.
 
 ## Architecture
 
@@ -66,14 +66,14 @@ flowchart TD
     O --> C{STEP 1<br/>Classification}
     C -->|info request| O
     C -->|document request| S{STEP 2<br/>Scope + routing}
-    S -->|FIN| A1[AGENT_FIN]
-    S -->|DIGITAL| A2[AGENT_DIGITAL]
-    S -->|PORTAL| A3[AGENT_PORTAL]
-    S -->|KANALI| A4[Digitalni Kanali<br/>Document Assistant]
-    S -.FINTECH planned.-> A5[AGENT_FINTECH]
-    A1 --> SK1[content-obrada-fin]
-    A2 --> SK2[search-digital-documents]
-    A3 --> SK3[search-cx-portal-documents]
+    S -->|ALFA| A1[AGENT_ALFA]
+    S -->|BETA| A2[AGENT_BETA]
+    S -->|DELTA| A3[AGENT_DELTA]
+    S -->|EPSILON| A4[Epsilon<br/>Document Assistant]
+    S -.GAMA planned.-> A5[AGENT_GAMA]
+    A1 --> SK1[content-obrada-alfa]
+    A2 --> SK2[search-beta-documents]
+    A3 --> SK3[search-delta-documents]
     A4 --> SK4[sharepoint-intelligent-search]
     SK1 & SK2 & SK3 & SK4 --> K[(SharePoint<br/>knowledge sources)]
     A1 & A2 & A3 & A4 --> O
@@ -154,11 +154,11 @@ Access and library selection are derived **solely from the department attribute 
 
 | Department (Entra ID) | UserLibrary | Agent | Domain |
 |---|---|---|---|
-| Financial services department | `FIN` | AGENT_FIN | contracts, parking, humanitarian, VAS, BULK, PRM |
-| Digital services department | `DIGITAL` | AGENT_DIGITAL | digital services (Identity Protect, Safe Net...) |
-| Fintech department | `FINTECH` | AGENT_FINTECH *(planned)* | fintech documentation |
-| Customer portal department | `PORTAL` | AGENT_PORTAL | benchmarks, matrices, SSO, functional requirements |
-| Digital channels department | `KANALI` | AGENT_KANALI | architecture, deployment, incidents, monitoring |
+| Department Alfa | `ALFA` | AGENT_ALFA | contracts, parking, humanitarian, VAS, BULK, PRM |
+| Department Beta | `BETA` | AGENT_BETA | digital services (Orion, Vega...) |
+| Department Gama | `GAMA` | AGENT_GAMA *(planned)* | Department Gama documentation |
+| Department Delta | `DELTA` | AGENT_DELTA | benchmarks, matrices, SSO, functional requirements |
+| Department Epsilon | `EPSILON` | AGENT_EPSILON | architecture, deployment, incidents, monitoring |
 
 If the topic of a request is outside the domain of the user's library, no search is run and the user gets a fixed reply saying the request concerns another department's documentation.
 
@@ -171,11 +171,11 @@ The orchestrator passes four authoritative values to the agent (`original_query`
 
 | Agent | Library | Domain | Skill |
 |---|---|---|---|
-| [AGENT_FIN](agents/fin.mdx) | `FIN` | Contracts: parking, humanitarian, VAS, BULK, PRM, rulebooks | `content-obrada-fin` |
-| [AGENT_DIGITAL](agents/digital.mdx) | `DIGITAL` | Identity Protect, Safe Net, Safe Home Net, VR service | `search-digital-documents` |
-| [AGENT_PORTAL](agents/cx-portal.mdx) | `PORTAL` | Benchmark analyses, purchase and payment matrices, SSO, functional requirements | `search-cx-portal-documents` |
-| [Digitalni Kanali Document Assistant](agents/digitalni-kanali.mdx) | `KANALI` | Architecture, deployment, incidents, monitoring, roadmap | `sharepoint-intelligent-search` |
-| AGENT_FINTECH | `FINTECH` | *planned, not yet implemented* | – |
+| [AGENT_ALFA](agents/alfa.mdx) | `ALFA` | Contracts: parking, humanitarian, VAS, BULK, PRM, rulebooks | `content-obrada-alfa` |
+| [AGENT_BETA](agents/beta.mdx) | `BETA` | Orion, Vega, Vega Home, VR service | `search-beta-documents` |
+| [AGENT_DELTA](agents/delta.mdx) | `DELTA` | Benchmark analyses, purchase and payment matrices, SSO, functional requirements | `search-delta-documents` |
+| [Epsilon Document Assistant](agents/epsilon.mdx) | `EPSILON` | Architecture, deployment, incidents, monitoring, roadmap | `sharepoint-intelligent-search` |
+| AGENT_GAMA | `GAMA` | *planned, not yet implemented* | – |
 
 Principles shared by all agents:
 
@@ -185,20 +185,20 @@ Principles shared by all agents:
 - **Verbatim extraction** – real dates, names, amounts and steps, never abstract descriptions.
 - **Conflict resolution** – when documents disagree, the conflict is stated, the newest approved document takes precedence, and the choice is never made silently.
 
-`AGENT_KANALI` (in the routing table) and “Digitalni Kanali Document Assistant” (in the agent instructions) are the same component.
+`AGENT_EPSILON` (in the routing table) and “Epsilon Document Assistant” (in the agent instructions) are the same component.
 
 ## Skills
 
 | Skill | Owner | Purpose |
 |---|---|---|
 | [content-obrada](skills/content-obrada.mdx) | Orchestrator | Content classification and extraction (orchestrator version) |
-| [content-obrada-fin](skills/content-obrada-fin.mdx) | AGENT_FIN | Search + extraction for FIN (v1.2) |
-| [search-digital-documents](skills/search-digital-documents.mdx) | AGENT_DIGITAL | Search of Digital documentation |
-| [search-cx-portal-documents](skills/search-cx-portal-documents.mdx) | AGENT_PORTAL | Search of CX Portal documentation (INDEX documents first) |
-| [sharepoint-intelligent-search](skills/sharepoint-intelligent-search.mdx) | Digitalni Kanali | Search of libraries and SharePoint lists with citations (v3.x) |
+| [content-obrada-alfa](skills/content-obrada-alfa.mdx) | AGENT_ALFA | Search + extraction for ALFA (v1.2) |
+| [search-beta-documents](skills/search-beta-documents.mdx) | AGENT_BETA | Search of Beta documentation |
+| [search-delta-documents](skills/search-delta-documents.mdx) | AGENT_DELTA | Search of Delta documentation (INDEX documents first) |
+| [sharepoint-intelligent-search](skills/sharepoint-intelligent-search.mdx) | Epsilon | Search of libraries and SharePoint lists with citations (v3.x) |
 | [validate-search-result](skills/validate-search-result.mdx) | Orchestrator | Result grading: PASS / PARTIAL / FAIL |
 
-`content-obrada` and `content-obrada-fin` are two separate versions of the same concept, each owned by its own component.
+`content-obrada` and `content-obrada-alfa` are two separate versions of the same concept, each owned by its own component.
 
 ### Query construction
 
@@ -219,13 +219,13 @@ All agents read content from SharePoint libraries on a single site. Each agent r
 
 | Library | Content |
 |---|---|
-| `FIN` | Contracts, annexes, parking contracts, humanitarian organization contracts, VAS/BULK/PRM, rulebooks, forms, procedures |
-| `DIGITAL` | Documentation of digital projects (Identity Protect, Safe Home Net, Safe Net, VR service) |
-| `PORTAL` | Benchmark analyses, purchase and payment matrices, SSO concepts, functional requirements |
-| `KANALI` | Architecture, deployment procedures, incident management, monitoring, roadmap |
-| `FINTECH` | *planned* |
+| `ALFA` | Contracts, annexes, parking contracts, humanitarian organization contracts, VAS/BULK/PRM, rulebooks, forms, procedures |
+| `BETA` | Documentation of digital projects (Orion, Vega Home, Vega, VR service) |
+| `DELTA` | Benchmark analyses, purchase and payment matrices, SSO concepts, functional requirements |
+| `EPSILON` | Architecture, deployment procedures, incident management, monitoring, roadmap |
+| `GAMA` | *planned* |
 
-Original `.pptx` and `.xlsx` files cannot be read reliably, so CX Portal uses consolidated **INDEX documents** (`_BENCHMARK_INDEX`, `_MATRICE_INDEX`, `_SSO_INDEX`) containing the full content of those files.
+Original `.pptx` and `.xlsx` files cannot be read reliably, so Delta uses consolidated **INDEX documents** (`_BENCHMARK_INDEX`, `_MATRICE_INDEX`, `_SSO_INDEX`) containing the full content of those files.
 
 Microsoft Purview sensitivity labels are always shown with the extracted data and never suppressed.
 
@@ -271,7 +271,7 @@ When the search budget runs out before the fallback chain finishes, the skill re
 | *„Ovaj zahtev se odnosi na dokumentaciju drugog sektora...”* (another department) | The topic is outside the domain of the user's library | Contact the responsible team or request broader access |
 | *„Dokument nije čitljiv automatski. Otvorite: [link]”* (unreadable) | Original `.pptx`/`.xlsx` or unreadable content | Use the INDEX documents or open the document via the link |
 | Message that the search could not be performed | Technical failure of the source (error or timeout), not “not found” | Try again; agents strictly distinguish these two cases |
-| A FINTECH request has no handler | AGENT_FINTECH is planned | Expected behavior |
+| A GAMA request has no handler | AGENT_GAMA is planned | Expected behavior |
 | Delegation silently fails | The agent name in the prompt does not match the name in Copilot Studio | Make the names match exactly |
 
 ## Repository structure
@@ -309,6 +309,6 @@ The site is then available at `http://localhost:3000`.
 | Component | Version |
 |---|---|
 | Orchestrator (system prompt) | `NexusSNF v2.1` |
-| `content-obrada-fin` | `v1.2` |
+| `content-obrada-alfa` | `v1.2` |
 | `sharepoint-intelligent-search` | `v3.x` |
 | Documentation | `v1.0.0` (2026-07-14) |

@@ -1,6 +1,6 @@
 ---
 title: "Povezani agenti — pregled"
-description: "Četiri domenska agenta NexusBot sistema, njihova biblioteka i skill, plus planirani AGENT_FINTECH."
+description: "Četiri domenska agenta NexusBot sistema, njihova biblioteka i skill, plus planirani AGENT_GAMA."
 icon: "users-gear"
 ---
 
@@ -8,10 +8,10 @@ icon: "users-gear"
 
 | Agent | Biblioteka (UserLibrary) | Domen | Skill |
 |---|---|---|---|
-| [AGENT_FIN](/agents/fin) | FIN | Ugovori: parking, humanitarni, VAS, BULK, PRM, pravilnici | [content-obrada-fin](/skills/content-obrada-fin) |
-| [AGENT_DIGITAL](/agents/digital) | DIGITAL | Identity Protect, Safe Net, Safe Home Net, VR servis | [search-digital-documents](/skills/search-digital-documents) |
-| [AGENT_PORTAL](/agents/cx-portal) | PORTAL | Benchmark, matrice, SSO, funkcionalni zahtevi | [search-cx-portal-documents](/skills/search-cx-portal-documents) |
-| [Digitalni Kanali Document Assistant](/agents/digitalni-kanali) | KANALI | Arhitektura, serveri, deploy, incidenti, monitoring, roadmap | [sharepoint-intelligent-search](/skills/sharepoint-intelligent-search) |
+| [AGENT_ALFA](/agents/alfa) | ALFA | Ugovori: parking, humanitarni, VAS, BULK, PRM, pravilnici | [content-obrada-alfa](/skills/content-obrada-alfa) |
+| [AGENT_BETA](/agents/beta) | BETA | Orion, Vega, Vega Home, VR servis | [search-beta-documents](/skills/search-beta-documents) |
+| [AGENT_DELTA](/agents/delta) | DELTA | Benchmark, matrice, SSO, funkcionalni zahtevi | [search-delta-documents](/skills/search-delta-documents) |
+| [Epsilon Document Assistant](/agents/epsilon) | EPSILON | Arhitektura, serveri, deploy, incidenti, monitoring, roadmap | [sharepoint-intelligent-search](/skills/sharepoint-intelligent-search) |
 
 Source: `nexusbot_orchestrator_system_ins.txt` (STEP 2); `share_info.txt`; `_index.md`
 
@@ -27,13 +27,13 @@ Svi agenti dele nekoliko principa:
 ## Napomene o topologiji
 
 <Info>
-**AGENT_FINTECH (planiran).** Ruting tabela orkestratora sadrži red `FINTECH → AGENT_FINTECH`, ali za njega **ne postoje** instrukcije, skill ni opis knowledge source-a u ovom exportu. Reč je o **planiranom** agentu koji tek treba da bude implementiran (i moguće naknadno izbačen). Do tada, zahtevi za `FINTECH` bibliotekom nemaju izvršioca.
+**AGENT_GAMA (planiran).** Ruting tabela orkestratora sadrži red `GAMA → AGENT_GAMA`, ali za njega **ne postoje** instrukcije, skill ni opis knowledge source-a u ovom exportu. Reč je o **planiranom** agentu koji tek treba da bude implementiran (i moguće naknadno izbačen). Do tada, zahtevi za `GAMA` bibliotekom nemaju izvršioca.
 
 Source: `nexusbot_orchestrator_system_ins.txt` (STEP 2); odsustvo u `_index.md` / `share_info.txt`
 </Info>
 
 <Info>
-**Jedan agent, dva naziva.** `AGENT_KANALI` (ruting tabela) i „Digitalni Kanali Document Assistant" (instrukcije agenta) označavaju **istu komponentu**.
+**Jedan agent, dva naziva.** `AGENT_EPSILON` (ruting tabela) i „Epsilon Document Assistant" (instrukcije agenta) označavaju **istu komponentu**.
 
-Source: `nexusbot_orchestrator_system_ins.txt` (STEP 2); `Digitalni-Kanali-Document-Assistant_ins.txt`
+Source: `nexusbot_orchestrator_system_ins.txt` (STEP 2); `Epsilon-Document-Assistant_ins.txt`
 </Info>

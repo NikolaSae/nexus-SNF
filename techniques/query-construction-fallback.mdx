@@ -18,7 +18,7 @@ Kvalitet dohvaćenog sadržaja u RAG sistemu presudno zavisi od kvaliteta upita.
 ```
 Never pass raw original_query to the Knowledge source.
 ```
-Source: `content-obrada-fin-skill.md` (Step 2)
+Source: `content-obrada-alfa-skill.md` (Step 2)
 
 Upit se sklapa od signal termina (po kategoriji) i očišćenog jezgra entiteta, uz intent-specifična doterivanja (npr. `contract_current` dodaje „poslednji aneks aktuelni datum važenja").
 
@@ -29,11 +29,11 @@ Core entity only, no signal terms
 Category + entity without specifics
 Broadest: category signal only
 ```
-Source: `content-obrada-fin-skill.md` (Step 2e)
+Source: `content-obrada-alfa-skill.md` (Step 2e)
 
 `sharepoint-intelligent-search` ima analogan lanac plus **semantic fan-out** (2–4 varijante) kada projekat/tip nisu razrešeni, uz deduplikaciju rezultata ≥80% preklapanja.
 
-Source: `sharepoint-intelligent-search-dig-kan-agent-skill.md` (Step 2, Step 3)
+Source: `sharepoint-intelligent-search-epsilon-agent-skill.md` (Step 2, Step 3)
 
 ### Budžet i tehnički otkaz
 ```
@@ -41,7 +41,7 @@ Search budget: cap total Knowledge source calls at 15 per user request ...
 If a Knowledge source call itself errors or times out (distinct from returning 
 zero relevant results), record it as a technical failure ...
 ```
-Source: `content-obrada-fin-skill.md` (Step 3); `sharepoint-intelligent-search-dig-kan-agent-skill.md` (Step 3)
+Source: `content-obrada-alfa-skill.md` (Step 3); `sharepoint-intelligent-search-epsilon-agent-skill.md` (Step 3)
 
 Kada lanac ne vrati ništa, skill prijavljuje **koje** je upite probao — da orkestrator korisniku da precizno objašnjenje umesto generičkog „nije nađeno".
 
@@ -51,6 +51,6 @@ Signal termini povećavaju preciznost, fallback povećava recall, budžet garant
 
 ## Dokaz u sistemu
 
-- Pipeline FIN skilla: [content-obrada-fin](/skills/content-obrada-fin).
-- Strategije Digitalnih kanala: [sharepoint-intelligent-search](/skills/sharepoint-intelligent-search).
+- Pipeline ALFA skilla: [content-obrada-alfa](/skills/content-obrada-alfa).
+- Strategije odeljenja Epsilon: [sharepoint-intelligent-search](/skills/sharepoint-intelligent-search).
 - Numerički limiti: [Podešavanja i limiti](/configuration/settings).

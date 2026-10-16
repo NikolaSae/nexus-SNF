@@ -16,7 +16,7 @@ Umesto da model „prepriča" dokument, ovaj obrazac ga prvo svrstava u tip (ugo
 
 ### Klasifikacija po tipu
 
-Svaki skill ima tabelu tipova sadržaja sa signalima. Primer (Digitalni kanali):
+Svaki skill ima tabelu tipova sadržaja sa signalima. Primer (Epsilon):
 ```
 | server_list | [redigovano] | ALL rows: [redigovano] | | access_list | [redigovano] | ALL entries: [redigovano] | | ownership | 
 KL, poslovni vlasnik ... | business owner, technical owner, 
@@ -24,7 +24,7 @@ doc title/version | | procedure | korak, Step, deploy |
 ALL numbered steps, in order | | architecture| server, baza, tehnologija | 
 ALL components, technologies, connections |
 ```
-Source: `sharepoint-intelligent-search-dig-kan-agent-skill.md` (Step 4)
+Source: `sharepoint-intelligent-search-epsilon-agent-skill.md` (Step 4)
 
 ### Verbatim, nikad apstraktno
 ```
@@ -33,7 +33,7 @@ Never use phrases like "Contains:", "The document covers:", "Defines:".
 Always extract actual data — real steps, real rules, real dates, 
 real names, real values, carried forward verbatim ...
 ```
-Source: `sharepoint-intelligent-search-dig-kan-agent-skill.md` (Step 4)
+Source: `sharepoint-intelligent-search-epsilon-agent-skill.md` (Step 4)
 
 Isti princip je u orkestratorovom skillu, sa zabranom srpskih fraza `"Sadržaj:"`, `"Dokument sadrži"`, `"Obuhvata:"`, `"Definiše:"`:
 ```
@@ -46,7 +46,7 @@ Source: `content-obrada-nexus-skill.md` (Step 3)
 
 Imena, email-ovi, telefoni, IP-jevi i hostname-ovi kopiraju se doslovno; nejasna vrednost se označava kao nepouzdano pročitana, nikad se ne pogađa placeholder-om (npr. „111 222"). Purview sensitivity labele se surfaceuju, nikad ne potiskuju.
 
-Source: `sharepoint-intelligent-search-dig-kan-agent-skill.md` (Step 4); `content-obrada-fin-skill.md` (Step 4)
+Source: `sharepoint-intelligent-search-epsilon-agent-skill.md` (Step 4); `content-obrada-alfa-skill.md` (Step 4)
 
 ## Zašto je bitno
 
@@ -55,5 +55,5 @@ Klasifikacija određuje *šta* izvući, verbatim pravila garantuju *tačnost*, a
 ## Dokaz u sistemu
 
 - Orkestratorova verzija: [content-obrada](/skills/content-obrada).
-- Domenske tabele tipova: [content-obrada-fin](/skills/content-obrada-fin), [sharepoint-intelligent-search](/skills/sharepoint-intelligent-search).
+- Domenske tabele tipova: [content-obrada-alfa](/skills/content-obrada-alfa), [sharepoint-intelligent-search](/skills/sharepoint-intelligent-search).
 - Prikaz izvučenih podataka: [Instrukcije orkestratora](/orchestrator/instructions) (STEP 4).

@@ -25,14 +25,14 @@ flowchart TD
     O --> C{STEP 1<br/>Klasifikacija}
     C -->|info zahtev| O
     C -->|dokument zahtev| S{STEP 2<br/>Scope + rutiranje}
-    S -->|FIN| A1[AGENT_FIN]
-    S -->|DIGITAL| A2[AGENT_DIGITAL]
-    S -->|PORTAL| A3[AGENT_PORTAL]
-    S -->|KANALI| A4[Digitalni Kanali<br/>Document Assistant]
-    S -.FINTECH planirano.-> A5[AGENT_FINTECH]
-    A1 --> SK1[content-obrada-fin]
-    A2 --> SK2[search-digital-documents]
-    A3 --> SK3[search-cx-portal-documents]
+    S -->|ALFA| A1[AGENT_ALFA]
+    S -->|BETA| A2[AGENT_BETA]
+    S -->|DELTA| A3[AGENT_DELTA]
+    S -->|EPSILON| A4[Epsilon<br/>Document Assistant]
+    S -.GAMA planirano.-> A5[AGENT_GAMA]
+    A1 --> SK1[content-obrada-alfa]
+    A2 --> SK2[search-beta-documents]
+    A3 --> SK3[search-delta-documents]
     A4 --> SK4[sharepoint-intelligent-search]
     SK1 --> K[(SharePoint<br/>knowledge source-i)]
     SK2 --> K
