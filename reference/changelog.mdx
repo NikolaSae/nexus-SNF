@@ -17,7 +17,7 @@ icon: "clock-rotate-left"
   - Konfiguracija, limiti, rešavanje problema, rečnik
 
   **Zabeležene otvorene stavke (planirano za kasnije):**
-  - `AGENT_FINTECH` i `FINTECH` biblioteka — planirani, još nisu implementirani
+  - `AGENT_GAMA` i `GAMA` biblioteka — planirani, još nisu implementirani
   - Model, kanali objavljivanja, limiti deploya / runtime verzija — nisu definisani u izvorima
 </Update>
 
@@ -28,13 +28,13 @@ Verzije komponenti kako su navedene u izvornim fajlovima:
 | Komponenta | Verzija | Napomena |
 |---|---|---|
 | Orkestrator (system prompt) | `v2.1` | `NexusSNF — Orchestrator System Prompt v2.1` |
-| `content-obrada-fin` | `v1.2` | v1.1 uveo injection defense, multi-category split, ambiguity note, search budget; v1.2 dodao provider-switch check za Parking `contract_current` i razrešavanje aktuelnog ugovora pre poređenja |
-| `sharepoint-intelligent-search` | `v3.0.0` | Konsolidovao stariji `digitalni-kanali-document-search` u jedan skill + SharePoint Lists podrška + hand-back arhitektura |
+| `content-obrada-alfa` | `v1.2` | v1.1 uveo injection defense, multi-category split, ambiguity note, search budget; v1.2 dodao provider-switch check za Parking `contract_current` i razrešavanje aktuelnog ugovora pre poređenja |
+| `sharepoint-intelligent-search` | `v3.0.0` | Konsolidovao stariji `epsilon-document-search` u jedan skill + SharePoint Lists podrška + hand-back arhitektura |
 
-Source: `nexusbot_orchestrator_system_ins.txt` (naslov); `content-obrada-fin-skill.md` (v1.2 napomena); `sharepoint-intelligent-search-dig-kan-agent-skill.md` (v3.0.0 napomena)
+Source: `nexusbot_orchestrator_system_ins.txt` (naslov); `content-obrada-alfa-skill.md` (v1.2 napomena); `sharepoint-intelligent-search-epsilon-agent-skill.md` (v3.0.0 napomena)
 
 <Note>
-Napomena uz `sharepoint-intelligent-search v3.0.0`: stari skill `digitalni-kanali-document-search` treba deaktivirati na agentu Digitalni Kanali — istovremeno pokretanje oba uvelo bi dvosmislenost rutiranja između dva skilla koji pokrivaju isti sadržaj. Taj stariji skill nije deo ovog exporta.
+Napomena uz `sharepoint-intelligent-search v3.0.0`: stari skill `epsilon-document-search` treba deaktivirati na agentu Epsilon — istovremeno pokretanje oba uvelo bi dvosmislenost rutiranja između dva skilla koji pokrivaju isti sadržaj. Taj stariji skill nije deo ovog exporta.
 
-Source: `sharepoint-intelligent-search-dig-kan-agent-skill.md` (v3.0.0 napomena)
+Source: `sharepoint-intelligent-search-epsilon-agent-skill.md` (v3.0.0 napomena)
 </Note>

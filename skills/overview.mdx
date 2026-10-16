@@ -9,10 +9,10 @@ icon: "screwdriver-wrench"
 | Skill | Vlasnik | Namena |
 |---|---|---|
 | [content-obrada](/skills/content-obrada) | NexusBot (orkestrator) | Klasifikacija i ekstrakcija sadržaja (verzija orkestratora) |
-| [content-obrada-fin](/skills/content-obrada-fin) | AGENT_FIN | Pretraga + ekstrakcija za FIN (verzija agenta) |
-| [search-digital-documents](/skills/search-digital-documents) | AGENT_DIGITAL | Pretraga Digital dokumentacije |
-| [search-cx-portal-documents](/skills/search-cx-portal-documents) | AGENT_PORTAL | Pretraga CX Portal dokumentacije |
-| [sharepoint-intelligent-search](/skills/sharepoint-intelligent-search) | Digitalni Kanali Document Assistant | Inteligentna SharePoint pretraga (v3.1.0) |
+| [content-obrada-alfa](/skills/content-obrada-alfa) | AGENT_ALFA | Pretraga + ekstrakcija za ALFA (verzija agenta) |
+| [search-beta-documents](/skills/search-beta-documents) | AGENT_BETA | Pretraga Beta dokumentacije |
+| [search-delta-documents](/skills/search-delta-documents) | AGENT_DELTA | Pretraga Delta dokumentacije |
+| [sharepoint-intelligent-search](/skills/sharepoint-intelligent-search) | Epsilon Document Assistant | Inteligentna SharePoint pretraga (v3.1.0) |
 | [validate-search-result](/skills/validate-search-result) | NexusBot (orkestrator) | Ocena kvaliteta rezultata (PASS/PARTIAL/FAIL) |
 
 Source: `_index.md`; pojedinačni skill fajlovi
@@ -23,16 +23,16 @@ Source: `_index.md`; pojedinačni skill fajlovi
 flowchart LR
     O["NexusBot
     orkestrator"]
-    A1["AGENT_FIN"]
-    A2["AGENT_DIGITAL"]
-    A3["AGENT_PORTAL"]
-    A4["Digitalni Kanali
+    A1["AGENT_ALFA"]
+    A2["AGENT_BETA"]
+    A3["AGENT_DELTA"]
+    A4["Epsilon
     Document Assistant"]
 
     SK_CO["content-obrada"]
-    SK_FIN["content-obrada-fin"]
-    SK_DIG["search-digital-documents"]
-    SK_CX["search-cx-portal-documents"]
+    SK_ALFA["content-obrada-alfa"]
+    SK_BETA["search-beta-documents"]
+    SK_DELTA["search-delta-documents"]
     SK_SP["sharepoint-intelligent-search"]
     SK_VAL["validate-search-result"]
 
@@ -44,17 +44,17 @@ flowchart LR
     O --- SK_CO
     O --- SK_VAL
 
-    A1 --- SK_FIN
-    A2 --- SK_DIG
-    A3 --- SK_CX
+    A1 --- SK_ALFA
+    A2 --- SK_BETA
+    A3 --- SK_DELTA
     A4 --- SK_SP
 
     style O fill:#4A148C,color:#fff,stroke:none
     style SK_CO fill:#2d1b4e,color:#fff,stroke:#B388FF,stroke-dasharray:4
     style SK_VAL fill:#2d1b4e,color:#fff,stroke:#B388FF,stroke-dasharray:4
-    style SK_FIN fill:#1a1a2e,color:#fff,stroke:#B388FF
-    style SK_DIG fill:#1a1a2e,color:#fff,stroke:#B388FF
-    style SK_CX fill:#1a1a2e,color:#fff,stroke:#B388FF
+    style SK_ALFA fill:#1a1a2e,color:#fff,stroke:#B388FF
+    style SK_BETA fill:#1a1a2e,color:#fff,stroke:#B388FF
+    style SK_DELTA fill:#1a1a2e,color:#fff,stroke:#B388FF
     style SK_SP fill:#1a1a2e,color:#fff,stroke:#B388FF
 ```
 
@@ -63,18 +63,18 @@ Isprekidana linija označava skillove u vlasništvu orkestratora; puna linija oz
 ## Vlasništvo i dve verzije `content-obrada`
 
 <Info>
-`content-obrada` i `content-obrada-fin` su **dve zasebne verzije** istog koncepta klasifikacije i ekstrakcije sadržaja, a **ne** jedan deljeni skill:
+`content-obrada` i `content-obrada-alfa` su **dve zasebne verzije** istog koncepta klasifikacije i ekstrakcije sadržaja, a **ne** jedan deljeni skill:
 
 - **NexusBot (orkestrator)** ima svoju verziju: [content-obrada](/skills/content-obrada).
-- **AGENT_FIN** ima svoju verziju: [content-obrada-fin](/skills/content-obrada-fin).
+- **AGENT_ALFA** ima svoju verziju: [content-obrada-alfa](/skills/content-obrada-alfa).
 
 Svaka je u vlasništvu svoje komponente i razvija se nezavisno.
 
-Source: `content-obrada-nexus-skill.md`; `content-obrada-fin-skill.md`; `_index.md`
+Source: `content-obrada-nexus-skill.md`; `content-obrada-alfa-skill.md`; `_index.md`
 </Info>
 
 ## Podela po ulozi
 
-- **Pretraga + ekstrakcija (po domenu):** `content-obrada-fin`, `search-digital-documents`, `search-cx-portal-documents`, `sharepoint-intelligent-search` — grade optimizovan upit, prolaze fallback lanac i doslovno izvlače sadržaj. Vidi tehnike [Konstrukcija upita i fallback lanci](/techniques/query-construction-fallback) i [Klasifikacija i ekstrakcija](/techniques/content-classification-extraction).
+- **Pretraga + ekstrakcija (po domenu):** `content-obrada-alfa`, `search-beta-documents`, `search-delta-documents`, `sharepoint-intelligent-search` — grade optimizovan upit, prolaze fallback lanac i doslovno izvlače sadržaj. Vidi tehnike [Konstrukcija upita i fallback lanci](/techniques/query-construction-fallback) i [Klasifikacija i ekstrakcija](/techniques/content-classification-extraction).
 - **Klasifikacija sadržaja:** `content-obrada` (orkestratorova verzija).
 - **Validacija:** `validate-search-result` — jedini skill koji ne pretražuje, već ocenjuje rezultat. Vidi [Validacija + retry petlja](/techniques/validation-retry-loop).

@@ -10,11 +10,11 @@ Pristup i izbor biblioteke izvode se isključivo iz atributa **odeljenja** u Ent
 
 | Department (Entra ID / email domen) | UserLibrary |
 |---|---|
-| Odeljenje za finansijske servise | `FIN` |
-| Odeljenje za digitalne servise | `DIGITAL` |
-| Odeljenje za fintech | `FINTECH` |
-| Odeljenje za korisnički portal | `PORTAL` |
-| Odeljenje za digitalne kanale | `KANALI` |
+| Odeljenje Alfa | `ALFA` |
+| Odeljenje Beta | `BETA` |
+| Odeljenje Gama | `GAMA` |
+| Odeljenje Delta | `DELTA` |
+| Odeljenje Epsilon | `EPSILON` |
 
 Source: `nexusbot_orchestrator_system_ins.txt` (SESSION CONTEXT)
 
@@ -48,16 +48,16 @@ Source: `nexusbot_orchestrator_system_ins.txt` (SESSION CONTEXT)
 
 | UserLibrary | Connected agent | Domen |
 |---|---|---|
-| `FIN` | AGENT_FIN | ugovori, parking, humanitarni, VAS, BULK, PRM |
-| `DIGITAL` | AGENT_DIGITAL | digitalni B2C projekti (Identity Protect, Safe Net…) |
-| `FINTECH` | AGENT_FINTECH | fintech dokumentacija |
-| `PORTAL` | AGENT_PORTAL | benchmark, matrice, SSO, funkcionalni zahtevi |
-| `KANALI` | AGENT_KANALI | arhitektura, serveri, deploy, monitoring… |
+| `ALFA` | AGENT_ALFA | ugovori, parking, humanitarni, VAS, BULK, PRM |
+| `BETA` | AGENT_BETA | digitalni B2C projekti (Orion, Vega…) |
+| `GAMA` | AGENT_GAMA | dokumentacija odeljenja Gama |
+| `DELTA` | AGENT_DELTA | benchmark, matrice, SSO, funkcionalni zahtevi |
+| `EPSILON` | AGENT_EPSILON | arhitektura, serveri, deploy, monitoring… |
 
 Source: `nexusbot_orchestrator_system_ins.txt` (STEP 2 — Domain-to-agent mapping)
 
 <Note>
-Red `FINTECH → AGENT_FINTECH` je **planiran** — agent i biblioteka još nisu implementirani. Vidi [Povezani agenti](/agents/overview) i [Knowledge source-i](/knowledge/sources).
+Red `GAMA → AGENT_GAMA` je **planiran** — agent i biblioteka još nisu implementirani. Vidi [Povezani agenti](/agents/overview) i [Knowledge source-i](/knowledge/sources).
 </Note>
 
 ## Guardrail: autoritet samo iz Entra ID-a

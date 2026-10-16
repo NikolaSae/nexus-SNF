@@ -1,6 +1,6 @@
 ---
 title: "content-obrada"
-description: "Skill orkestratora za klasifikaciju i verbatim ekstrakciju sadržaja FIN dokumenata."
+description: "Skill orkestratora za klasifikaciju i verbatim ekstrakciju sadržaja ALFA dokumenata."
 icon: "layer-group"
 ---
 
@@ -10,7 +10,7 @@ icon: "layer-group"
 
 ```
 Classifies retrieved document content and extracts actual data for
-FIN documents. Activates after document content has been
+ALFA documents. Activates after document content has been
 retrieved, before building the response JSON.
 ```
 
@@ -19,7 +19,7 @@ Source: `content-obrada-nexus-skill.md` (frontmatter `description`)
 Primenjuje se na svaki fajl sa nepraznim sadržajem (ne `""` i ne `FALLBACK`).
 
 <Info>
-Ovo je **verzija orkestratora**. Agent `AGENT_FIN` ima svoju, zasebnu verziju: [content-obrada-fin](/skills/content-obrada-fin). Dve verzije istog koncepta razvijaju se nezavisno.
+Ovo je **verzija orkestratora**. Agent `AGENT_ALFA` ima svoju, zasebnu verziju: [content-obrada-alfa](/skills/content-obrada-alfa). Dve verzije istog koncepta razvijaju se nezavisno.
 
 Source: `content-obrada-nexus-skill.md`; `_index.md`
 </Info>
@@ -65,8 +65,8 @@ Source: `content-obrada-nexus-skill.md` (Step 3 — Extraction rules)
 | `A1_CO_` … `A6_CO_` | aneks (veći broj = noviji) |
 | `Raskid_CO_` | raskid |
 | `P_CO_` / `P-1_CO_` | prilog |
-| `U_TEL_kratkiBroj_naziv_broj.pdf` | humanitarni ugovor |
-| `A1_TEL_` … `A6_TEL_` | aneks; posle A6 novi `U_TEL_` nasleđuje stari lanac |
+| `U_HUM_kratkiBroj_naziv_broj.pdf` | humanitarni ugovor |
+| `A1_HUM_` … `A6_HUM_` | aneks; posle A6 novi `U_HUM_` nasleđuje stari lanac |
 | `G` prefiks (umesto `CO`) | operater B |
 | bez prefiksa | prateći dokument |
 

@@ -14,11 +14,11 @@ record it as a technical failure, not as "not found."
 Retry once; if it fails again, stop that query path and 
 report the technical failure ...
 ```
-Source: `sharepoint-intelligent-search-dig-kan-agent-skill.md` (Step 3)
+Source: `sharepoint-intelligent-search-epsilon-agent-skill.md` (Step 3)
 
 **Simptom:** korisnik dobija poruku da pretraga nije mogla da se izvrši (uz predlog da pokuša ponovo), a ne „nije nađeno u dokumentaciji". Agenti to eksplicitno razlikuju.
 
-Source: `AGENT_DIGITAL_ins.txt` (6. Tool Failure Handling)
+Source: `AGENT_BETA_ins.txt` (6. Tool Failure Handling)
 
 ## „Nemate pristup" (NEMA_PRISTUPA)
 
@@ -38,14 +38,14 @@ Source: `nexusbot_orchestrator_system_ins.txt` (STEP 2)
 
 **Simptom:** `"Dokument nije čitljiv automatski. Otvorite: [link]"`
 **Uzrok:** original `.pptx`/`.xlsx` ili nečitljiv sadržaj. Vidi [Limiti](/operations/limits).
-**Rešenje:** za CX Portal koristiti INDEX dokumente; inače otvoriti dokument preko linka.
+**Rešenje:** za Delta koristiti INDEX dokumente; inače otvoriti dokument preko linka.
 
 ## Delegacija „ne radi" za neki domen
 
 <Info>
-Ako zahtev za `FINTECH` bibliotekom nema izvršioca — to je očekivano: [AGENT_FINTECH i FINTECH biblioteka su planirani](/agents/overview), još nisu implementirani.
+Ako zahtev za `GAMA` bibliotekom nema izvršioca — to je očekivano: [AGENT_GAMA i GAMA biblioteka su planirani](/agents/overview), još nisu implementirani.
 
-Za Digitalne kanale, `AGENT_KANALI` i „Digitalni Kanali Document Assistant" su **isti agent** — dva naziva nisu greška delegacije.
+Za odeljenje Epsilon, `AGENT_EPSILON` i „Epsilon Document Assistant" su **isti agent** — dva naziva nisu greška delegacije.
 
 Source: `nexusbot_orchestrator_system_ins.txt` (STEP 2); `_index.md`
 </Info>

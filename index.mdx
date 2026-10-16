@@ -21,7 +21,7 @@ Source: `nexusbot_orchestrator_system_ins.txt` (naslov: `# NexusSNF — Orchestr
     Centralni mozak: klasifikacija, rutiranje po odeljenju, validacija i retry, prikaz rezultata.
   </Card>
   <Card title="4 povezana agenta" icon="users-gear" href="/agents/overview">
-    FIN, DIGITAL, PORTAL i Digitalni Kanali — svaki pokriva svoj domen i biblioteku.
+    ALFA, BETA, DELTA i Epsilon — svaki pokriva svoj domen i biblioteku.
   </Card>
   <Card title="6 skillova" icon="screwdriver-wrench" href="/skills/overview">
     Skillovi za pretragu, ekstrakciju sadržaja i validaciju rezultata.
@@ -39,11 +39,11 @@ Sistem počiva na dva principa koja se provlače kroz sve komponente: **retrieva
 flowchart TD
     U([Korisnik]) --> O[NexusBot orkestrator]
     O -->|klasifikacija + rutiranje po odeljenju| R{UserLibrary}
-    R --> A1[AGENT_FIN]
-    R --> A2[AGENT_DIGITAL]
-    R --> A3[AGENT_PORTAL]
-    R --> A4[Digitalni Kanali Document Assistant]
-    R -.planirano.-> A5[AGENT_FINTECH]
+    R --> A1[AGENT_ALFA]
+    R --> A2[AGENT_BETA]
+    R --> A3[AGENT_DELTA]
+    R --> A4[Epsilon Document Assistant]
+    R -.planirano.-> A5[AGENT_GAMA]
     A1 --> K[(SharePoint knowledge source-i)]
     A2 --> K
     A3 --> K
@@ -57,7 +57,7 @@ flowchart TD
 ```
 
 <Info>
-**AGENT_FINTECH** i njemu pridružena **FINTECH** biblioteka pojavljuju se u ruting tabeli orkestratora, ali još nisu implementirani (nema instrukcija, skilla ni opisa izvora). Dokumentovani su kao **planirana** proširenja.
+**AGENT_GAMA** i njemu pridružena **GAMA** biblioteka pojavljuju se u ruting tabeli orkestratora, ali još nisu implementirani (nema instrukcija, skilla ni opisa izvora). Dokumentovani su kao **planirana** proširenja.
 
 Source: `nexusbot_orchestrator_system_ins.txt` (STEP 2 — routing tabela)
 </Info>

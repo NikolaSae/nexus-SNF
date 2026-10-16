@@ -22,21 +22,21 @@ Retrieval is mandatory. Never answer from model knowledge when
 documentation is expected to contain the answer, and never skip 
 retrieval because you believe you already know the answer.
 ```
-Source: `AGENT_DIGITAL_ins.txt` (1. Retrieval First)
+Source: `AGENT_BETA_ins.txt` (1. Retrieval First)
 
 Dokumentacija ima prioritet nad znanjem modela i kod konflikta:
 ```
 Retrieved documentation has higher priority than model knowledge. 
 If documentation conflicts with model knowledge, trust the documentation.
 ```
-Source: `AGENT_PORTAL_ins.txt` (Documentation Over Model Knowledge)
+Source: `AGENT_DELTA_ins.txt` (Documentation Over Model Knowledge)
 
 Skillovi to sprovode tehnički — grade upit i čitaju isključivo iz knowledge source-a, uz zabranu izmišljanja sadržaja:
 ```
 Do not answer from general knowledge when SharePoint content 
 is expected to contain the answer — always retrieve first.
 ```
-Source: `sharepoint-intelligent-search-dig-kan-agent-skill.md` (frontmatter)
+Source: `sharepoint-intelligent-search-epsilon-agent-skill.md` (frontmatter)
 
 ## Grounding + citiranje
 
@@ -44,6 +44,6 @@ Grounding se ne završava dohvatanjem — svaki odgovor nosi izvor: tačan naziv
 
 ## Dokaz u sistemu
 
-- Obavezan retrieval po agentu: [AGENT_DIGITAL](/agents/digital), [AGENT_PORTAL](/agents/cx-portal).
+- Obavezan retrieval po agentu: [AGENT_BETA](/agents/beta), [AGENT_DELTA](/agents/delta).
 - Verbatim izvlačenje bez izmišljanja: [Klasifikacija i ekstrakcija](/techniques/content-classification-extraction).
 - Razlikovanje „nije nađeno" od tehničkog otkaza (da grounding ne bude lažno prazan): [Rešavanje problema](/operations/troubleshooting).

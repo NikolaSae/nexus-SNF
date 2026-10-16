@@ -38,10 +38,10 @@
         "group": "Povezani agenti",
         "pages": [
           "agents/overview",
-          "agents/fin",
-          "agents/digital",
-          "agents/cx-portal",
-          "agents/digitalni-kanali"
+          "agents/alfa",
+          "agents/beta",
+          "agents/delta",
+          "agents/epsilon"
         ]
       },
       {
@@ -49,9 +49,9 @@
         "pages": [
           "skills/overview",
           "skills/content-obrada",
-          "skills/content-obrada-fin",
-          "skills/search-digital-documents",
-          "skills/search-cx-portal-documents",
+          "skills/content-obrada-alfa",
+          "skills/search-beta-documents",
+          "skills/search-delta-documents",
           "skills/sharepoint-intelligent-search",
           "skills/validate-search-result"
         ]
